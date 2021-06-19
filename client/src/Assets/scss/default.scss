@@ -1,0 +1,20 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+$mainBlue: #2c7be5;
+$mainOrange: #fa7921;
+$mainGrey: #edf2f9;
+$mainBlack: #515b68;
+
+html,
+body {
+  font-family: "Roboto", sans-serif;
+  background: $mainGrey;
+  color: $mainBlack;
+}
+a {
+  font-family: "Roboto", sans-serif;
+}

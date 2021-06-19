@@ -1,0 +1,19 @@
+:root {
+  /*main colors*/
+  --clr-primary: #2c7be5;
+  --clr-secondary: #fa7921;
+  --clr-primary-grey: #edf2f9;
+  --clr-primary-black: #515b68;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Roboto, sans-serif;
+  background: #edf2f9;
+  color: #515b68;
+}
