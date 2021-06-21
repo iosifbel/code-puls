@@ -1,4 +1,4 @@
-const connection = require("../models").connection;
+const connection = require("../config/db").connection;
 
 const controller = {
   reset: (req, res) => {
