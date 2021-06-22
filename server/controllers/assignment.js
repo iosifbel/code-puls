@@ -41,28 +41,7 @@ const controller = {
             }
           }
         );
-      },  
-
-    getTestsByCourse: async (req, res) => {
-        connection.query(
-          mysql.format(
-            "SELECT t.* FROM teste t INNER JOIN materii m ON m.id = t.id_materie WHERE m.id = ?" ,
-            [req.params.course_id]           
-          ),
-    
-          (err, result) => {
-            if (!err) {
-              if (result) {
-                res.status(200).send(result);
-              } else {
-                res.status(404).send("Not found");
-              }
-            } else {
-              res.status(500).send("Server error" + err);
-            }
-          }
-        );
-      }, 
+      },   
     addTest: async (req, res) => {
         connection.query(
           mysql.format(
