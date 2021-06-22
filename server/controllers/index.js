@@ -1,4 +1,3 @@
-const other = require("./other");
 const student = require("./student");
 const teacher = require("./teacher");
 const subject = require("./subject");
@@ -7,7 +6,6 @@ const question = require("./question");
 const grade = require("./grade");
 
 const controllers = {
-  other,
   student,
   teacher,
   subject,

@@ -1,4 +1,5 @@
-const connection = require("../config/db").connection;
+const connection = require("../config/db");
+const mysql = require("mysql2");
 
 const controller = {};
 

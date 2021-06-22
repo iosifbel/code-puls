@@ -62,7 +62,7 @@ const controller = {
   getSubjects: async (req, res) => {
     connection.query(
       mysql.format(
-        "SELECT m.id, m.descriere, p.nume, p.prenume, m.an FROM materii m JOIN inrolare_materie im ON m.id = im.id_materie JOIN studenti s ON im.id_student = s.id JOIN profesori p ON p.id = m.id WHERE s.id = ?",
+        "SELECT m.*, p.nume, p.prenume FROM materii m INNER JOIN inrolare_materie im ON m.id = im.id_materie INNER JOIN profesori p ON m.id_profesor = p.id WHERE im.id_student = ?",
         [req.params.student_id]
       ),
 
