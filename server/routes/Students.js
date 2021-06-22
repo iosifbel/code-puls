@@ -9,5 +9,6 @@ router.get("/year/:student_year", studentController.getByYear);
 router.get("/:student_id/subjects", studentController.getSubjects);
 router.get("/:student_id/due", studentController.getAssignmentsDue);
 router.get("/:student_id/expired", studentController.getAssignmentsExpired);
+router.put("/:student_id/upload/:test_id", studentController.uploadAssignment);
 
 module.exports = router;

@@ -119,6 +119,30 @@ const controller = {
       }
     );
   },
+  uploadAssignment: async (req, res) => {
+    connection.query(
+      mysql.format(
+        "UPDATE note SET incercare = ? WHERE id_student = ? AND id_test = ?",
+        [ req.body.incercare,          
+          req.params.student_id,
+          req.params.test_id
+        ]
+      ),
+      (err, result) => {
+        if (!err) {
+          if (result) {
+            if(result.affectedRows > 0)
+              res.status(200).send("Assignment uploaded");
+            else {
+              res.status(404).send("No student with this test assigned found");             
+            }
+          }
+        } else {
+          res.status(500).send("Server error");
+        }
+      }
+    );
+  },
 };
 
 module.exports = controller;
