@@ -85,6 +85,24 @@ const controller = {
           }
         );
       },
+    assignTestToGroup: async (req, res) => {
+        connection.query(
+          mysql.format(
+            "INSERT INTO note (id_student, id_test) SELECT s.ID, t.ID FROM studenti s, teste t WHERE t.id=? AND s.grupa=?" ,
+            [               
+                req.params.test_id,
+                req.params.group_id
+            ]           
+          ),    
+          (err, result) => {
+            if (!err) {              
+                res.status(200).send("Assignment updated");           
+            } else {
+              res.status(500).send("Server error" + err);
+            }
+          }
+        );
+      },
     unassignTest: async (req, res) => {
         connection.query(
           mysql.format(
