@@ -3,6 +3,7 @@ const router = express.Router();
 
 const questionController = require("../controllers").question;
 
-// router.get("/", studentController.getAll);
+router.get("/:question_id", questionController.getById);
+router.get("/assess/:question_id", questionController.assessQuestion);
 
 module.exports = router;
