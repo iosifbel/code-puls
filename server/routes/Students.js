@@ -10,5 +10,6 @@ router.get("/:student_id/subjects", studentController.getSubjects);
 router.get("/:student_id/due", studentController.getAssignmentsDue);
 router.get("/:student_id/expired", studentController.getAssignmentsExpired);
 router.put("/:student_id/upload/:test_id", studentController.uploadAssignment);
+router.put("/:student_id/uploadAssessed/:test_id", studentController.uploadAssessedAssignment);
 
 module.exports = router;
