@@ -14,12 +14,12 @@ function onLoad(newValue) {
   console.log("change", newValue);
 }
 
-function CodeEditor() {
+function CodeEditor(props) {
   return (
     <AceEditor
       width="undefined"
       height="20em"
-      mode="javascript"
+      mode= {props.language}
       theme="tomorrow"
       onChange={onChange}
       name="UNIQUE_ID_OF_DIV"
