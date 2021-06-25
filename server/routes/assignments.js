@@ -11,4 +11,6 @@ router.put("/update/:test_id",assignmentController.updateTest);
 router.delete("/unassign/:test_id", assignmentController.unassignTest);
 router.delete("/delete/:test_id", assignmentController.deleteTest);
 
+router.get("/:test_id/questions/", assignmentController.getByTestWithAnswers);
+router.get("/:test_id/questions/privileged", assignmentController.getByTestWithAnswers);
 module.exports = router;

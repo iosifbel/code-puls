@@ -1,8 +1,9 @@
 const connection = require("../config/db");
 const mysql = require("mysql2");
 
+
 const controller = {
-    getById: async (req, res) => {
+    getById: async (req, res) => {      
         connection.query(
           mysql.format(
             "SELECT * FROM teste WHERE id = ?" ,
@@ -138,9 +139,46 @@ const controller = {
             }
           }
         );
-      },
+      },  
+    getByTest: async (req, res) => {
+          connection.query(
+            mysql.format(
+              "SELECT t.titlu, i.id, i.descriere FROM intrebari i JOIN teste_intrebari ti ON ti.id_intrebare = i.id JOIN teste t ON t.id = ti.id_test WHERE t.id = ?" ,
+              [req.params.test_id]           
+            ),    
+            (err, result) => {
+              if (!err) {
+                if (result) {
+                  res.status(200).send(result);
+                } else {
+                  res.status(404).send("Not found");
+                }
+              } else {
+                res.status(500).send("Server error" + err);
+              }
+            }
+          );
+        },
+    getByTestWithAnswers: async (req, res) => {
+          connection.query(
+            mysql.format(
+              "SELECT t.titlu, i.* FROM intrebari i JOIN teste_intrebari ti ON ti.id_intrebare = i.id JOIN teste t ON t.id = ti.id_test WHERE t.id = ?" ,
+              [req.params.test_id]           
+            ),    
+            (err, result) => {
+              if (!err) {
+                if (result) {
+                  res.status(200).send(result);
+                } else {
+                  res.status(404).send("Not found");
+                }
+              } else {
+                res.status(500).send("Server error" + err);
+              }
+            }
+          );
+        },
      
-
 };
 
 module.exports = controller;
