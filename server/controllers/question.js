@@ -78,7 +78,7 @@ const controller = {
           }
       function saveToDb(assessment) {
       return axios.put(`${rootURL}students/${studentId}/uploadAssessed/${testId}`, {
-        incercare : JSON.stringify(assignment),
+        incercare : JSON.stringify(assignment.source_code),
         evaluareAutomata : JSON.stringify(assessment)
       })
       .then(function (response) {        
