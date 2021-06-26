@@ -7,7 +7,7 @@ import { IconContext } from "react-icons/lib";
 import theme from "../Assets/theme";
 
 function Navbar(props) {
-  let NavbarData = props.type == "student" ? NavbarDataStudent : NavbarDataTeacher; 
+  let NavbarData = props.type === "student" ? NavbarDataStudent : NavbarDataTeacher; 
   return (
     <div>
       <Wrapper>

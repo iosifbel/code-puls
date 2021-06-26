@@ -1,22 +1,24 @@
-import styled from "styled-components";
+import { useState } from "react";
+import {Route, Switch, withRouter} from "react-router-dom"
+import {TakeTest} from "."
+import TestsGrid from "../components/testsGrid";
 
 function Tests() {
+  const [testId, setTestId] = useState(0);
+
+  const handleCallback = (childData) =>{
+    console.log("Test")
+    setTestId(childData)
+    console.log(childData)
+}
+
   return (
-    <Wrapper>
-    {" "}
-    <div>
-      <h1>Test programate</h1>
-    </div>
-  </Wrapper>
+    <Switch>
+    <Route path="/tests/takeTest" render ={props => (<TakeTest {...props} testId={testId}/>)}/>
+    <Route path="/tests" render ={props => (<TestsGrid {...props} parentCallBack={handleCallback}/>)} />  
+  </Switch>  
   );
 }
 
-const Wrapper = styled.div`
-  display: flex;
-  height: 90vh;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
-`;
 
-export default Tests;
+export default withRouter(Tests);

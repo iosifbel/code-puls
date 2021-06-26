@@ -1,13 +1,15 @@
-import Header from "../components/Header";
-import styled from "styled-components";
 
-function Dashboard(props) {
+import styled from "styled-components";
+import React from "react";
+
+
+function Dashboard(props) {  
   return (
     <Wrapper>
     {" "}
     <div>
       <h1>Panou de lucru</h1>
-      <h2>{props.type ? props.type : "none"}</h2>
+      <h2>{props.type ? props.type : "none"}</h2>     
     </div>
   </Wrapper>
   );
