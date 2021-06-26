@@ -1,6 +1,6 @@
 import * as MdIcons from "react-icons/md";
 
-export const NavbarData = [
+export const NavbarDataStudent = [
   {
     title: "Panou de lucru",
     path: "/",

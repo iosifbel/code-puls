@@ -1,12 +1,13 @@
 import Header from "../components/Header";
 import styled from "styled-components";
 
-function Dashboard() {
+function Dashboard(props) {
   return (
     <Wrapper>
     {" "}
     <div>
       <h1>Panou de lucru</h1>
+      <h2>{props.type ? props.type : "none"}</h2>
     </div>
   </Wrapper>
   );

@@ -1,11 +1,13 @@
 import React from "react";
-import { NavbarData } from "./NavbarData";
+import { NavbarDataStudent } from "./NavbarDataStudent";
+import { NavbarDataTeacher } from "./NavbarDataTeacher";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { IconContext } from "react-icons/lib";
 import theme from "../Assets/theme";
 
 function Navbar(props) {
+  let NavbarData = props.type == "student" ? NavbarDataStudent : NavbarDataTeacher; 
   return (
     <div>
       <Wrapper>
