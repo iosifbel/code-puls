@@ -1,16 +1,38 @@
 import { Card, Button } from "../components/defaultComponents"
 import CodeEditor from "../components/CodeEditor";
 import styled from "styled-components";
-import React from "react"
+import React, {useEffect} from "react"
 import {AppContext} from "../context/context"
 
-function TakeTest({testId}) {
+function TakeTest({testId}) {  
   const {setShowNavbar} = React.useContext(AppContext);
   setShowNavbar(false);
+
+  const {testQuestions, getTestQuestions, isLoading} = React.useContext(AppContext);  
+  
+  useEffect(() => {
+    console.log(testId)
+    getTestQuestions(testId);
+  console.log(testQuestions)
+}, [])
+
+if(isLoading) {
+  return ( <Wrapper>   
+    <div>
+      <h1>Questions are loading..</h1>
+    </div>
+  </Wrapper>)
+}  
+  
   return (
     <div>      
       <Wrapper>
-        <ProblemCard>Problema 1</ProblemCard>
+        <ProblemCard>
+          
+        {testQuestions.map((question) => (
+          <h3>{question.descriere}</h3>
+        ))}
+        </ProblemCard>
         <EditorCard>
           <CodeEditor></CodeEditor>
         </EditorCard>

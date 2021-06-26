@@ -140,7 +140,7 @@ const controller = {
           }
         );
       },  
-    getByTest: async (req, res) => {
+    getQuestionsByTest: async (req, res) => {
           connection.query(
             mysql.format(
               "SELECT t.titlu, i.id, i.descriere FROM intrebari i JOIN teste_intrebari ti ON ti.id_intrebare = i.id JOIN teste t ON t.id = ti.id_test WHERE t.id = ?" ,
@@ -159,7 +159,7 @@ const controller = {
             }
           );
         },
-    getByTestWithAnswers: async (req, res) => {
+    getQuestionsByTestWithAnswers: async (req, res) => {
           connection.query(
             mysql.format(
               "SELECT t.titlu, i.* FROM intrebari i JOIN teste_intrebari ti ON ti.id_intrebare = i.id JOIN teste t ON t.id = ti.id_test WHERE t.id = ?" ,

@@ -7,9 +7,10 @@ const AppProvider = ({children}) => {
     const [isLoading, setIsLoading] = useState(false);
     const [tests, setTests] = useState([]); 
     const [showNavbar, setShowNavbar] = useState(true);
+    const [testQuestions, setTestQuestions] = useState([]);
 
     const  getStudentTests = async () => {
-        console.log("tests are get from db")
+        console.log("getting tests from db..")
         setIsLoading(true);
         const response  = await axios.get(`${rootURL}/students/1/due`)
         .catch((err) => console.log(err));
@@ -21,12 +22,24 @@ const AppProvider = ({children}) => {
 
     }  
 
-  
+    const  getTestQuestions = async (testId) => {
+        console.log("getting questions from db..")
+        setIsLoading(true);
+        const response  = await axios.get(`${rootURL}/assignments/${testId}/questions`)
+        .catch((err) => console.log(err));
+
+        if(response) {
+            // console.log(response.data)
+            setTestQuestions(response.data);
+        }
+        setIsLoading(false);
+
+    }  
 
 
 
 
-    return <AppContext.Provider value={{tests, isLoading, getStudentTests, showNavbar, setShowNavbar}}>{children} </AppContext.Provider>
+    return <AppContext.Provider value={{tests, isLoading, getStudentTests, showNavbar, setShowNavbar, testQuestions, getTestQuestions}}>{children} </AppContext.Provider>
 }
 
 export {AppContext, AppProvider}
