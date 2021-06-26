@@ -5,10 +5,13 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { IconContext } from "react-icons/lib";
 import theme from "../Assets/theme";
+import {AppContext} from "../context/context"
 
 function Navbar(props) {
-  let NavbarData = props.type === "student" ? NavbarDataStudent : NavbarDataTeacher; 
+  let NavbarData = props.type === "student" ? NavbarDataStudent : NavbarDataTeacher;
+  const {showNavbar} = React.useContext(AppContext); 
   return (
+    !showNavbar ? null :
     <div>
       <Wrapper>
         <IconContext.Provider value={{ color: theme.Blue1 }}>

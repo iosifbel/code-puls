@@ -6,7 +6,7 @@ const AppContext = React.createContext();
 const AppProvider = ({children}) => {
     const [isLoading, setIsLoading] = useState(false);
     const [tests, setTests] = useState([]); 
-
+    const [showNavbar, setShowNavbar] = useState(true);
 
     const  getStudentTests = async () => {
         console.log("tests are get from db")
@@ -26,7 +26,7 @@ const AppProvider = ({children}) => {
 
 
 
-    return <AppContext.Provider value={{tests, isLoading, getStudentTests}}>{children} </AppContext.Provider>
+    return <AppContext.Provider value={{tests, isLoading, getStudentTests, showNavbar, setShowNavbar}}>{children} </AppContext.Provider>
 }
 
 export {AppContext, AppProvider}

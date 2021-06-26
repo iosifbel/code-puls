@@ -1,10 +1,12 @@
 import { Card, Button } from "../components/defaultComponents"
 import CodeEditor from "../components/CodeEditor";
 import styled from "styled-components";
-import Header from "../components/Header";
+import React from "react"
+import {AppContext} from "../context/context"
 
 function TakeTest({testId}) {
-  
+  const {setShowNavbar} = React.useContext(AppContext);
+  setShowNavbar(false);
   return (
     <div>      
       <Wrapper>
