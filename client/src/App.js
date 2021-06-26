@@ -12,10 +12,12 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import Navbar from "./components/Navbar";
+import Header from "./components/Header";
 
 function App() {
   return (
     <Router>
+      <Header></Header>
       <Navbar></Navbar>
       <Switch>
         <Route path="/" exact={true}>

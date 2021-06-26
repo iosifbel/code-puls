@@ -36,6 +36,7 @@ const Wrapper = styled.section`
   display: grid;
   width: 100%;
   grid-template-areas: "A    B   B   C";
+  z-index : 100;
 `;
 
 const StyledArrow = styled(Nav.Link)`
