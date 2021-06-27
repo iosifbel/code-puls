@@ -4,13 +4,18 @@ import { MdMenu } from "react-icons/md";
 import { Nav } from "react-bootstrap";
 import styled from "styled-components";
 import logo from "../Assets/logo.svg";
+import {useHistory} from "react-router-dom"
 
 function Header() {
+  const history = useHistory()
+  function goBack() {
+    history.goBack();
+  }
   return (
     <div>
       <DefaultNavbar>
         <Wrapper>
-          <StyledArrow href="/">
+          <StyledArrow onClick={goBack}>
             <FaArrowLeft></FaArrowLeft>
           </StyledArrow>
           <StyledBrand href="/">

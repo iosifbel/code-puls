@@ -15,8 +15,9 @@ function TestsGrid(props) {
 }, [])
 
   const testClicked = (e) => {
-    console.log("clicked card with id " + e.target.id);    
-    props.parentCallBack(e.target.id)
+    console.log("clicked card with id " + e.target.id);
+    const clickedTest =  tests.find( test => test.id == e.target.id);     
+    props.parentCallBack(clickedTest);
     // e.preventDefault(); 
   }
 

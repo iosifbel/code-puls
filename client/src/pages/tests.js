@@ -4,17 +4,16 @@ import {TakeTest} from "."
 import TestsGrid from "../components/testsGrid";
 
 function Tests() {
-  const [testId, setTestId] = useState(0);
+  const [test, setTest] = useState({});
 
-  const handleCallback = (childData) =>{
-    console.log("Test")
-    setTestId(childData)
-    console.log(childData)
+  const handleCallback = (childData) =>{ 
+    console.log(childData)   
+    setTest(childData)    
 }
 
   return (
     <Switch>
-    <Route path="/tests/takeTest" render ={props => (<TakeTest {...props} testId={testId}/>)}/>
+    <Route path="/tests/takeTest" render ={props => (<TakeTest {...props} test={test}/>)}/>
     <Route path="/tests" render ={props => (<TestsGrid {...props} parentCallBack={handleCallback}/>)} />  
   </Switch>  
   );
