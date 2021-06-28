@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import axios from "axios";
 const rootURL = "http://localhost:5000/api";
 
-const judege0Languges = 
+const judge0Languges = 
 [
     {"id":48,"name":"C (GCC 7.4.0)"},
     {"id":51,"name":"C# (Mono 6.6.0.161)"},
@@ -97,7 +97,7 @@ const AppProvider = ({children}) => {
     {{
         tests, isLoading, getStudentTests, showNavbar,
         setShowNavbar, testQuestions, getTestQuestions,
-        aceLanguages, 
+        aceLanguages, judge0Languges,
         codeEditorText, setCodeEditorText, encode, decode,
 
     }}>{children} </AppContext.Provider>

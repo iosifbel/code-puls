@@ -102,8 +102,7 @@ if(isLoading) {
         <ProblemCard>   
         {testQuestions.map((question) => (
           <h3>{question.descriere}</h3>
-        ))}
-        {/* <h3>afljad;kfljad;klfja;dkljfak;lj;lj;dsj;ldjsja afa;dfjak;ldjfakdjfkl;adsf;kladj;kjj;jdaf;fs</h3> */}
+        ))}        
         </ProblemCard>
         <EditorCard>
           <CodeEditor language = {language}></CodeEditor>
