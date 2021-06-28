@@ -29,7 +29,7 @@ const AppProvider = ({children}) => {
     const [showNavbar, setShowNavbar] = useState(true);
     const [testQuestions, setTestQuestions] = useState([]);
     const [aceLanguages] = useState(ace);
-    const [judgeResponse, setJudgeResponse] = useState();
+    // const [judgeResponse, setJudgeResponse] = useState();
     const [codeEditorText, setCodeEditorText] = useState("#include<iostream>");
     
     const getStudentTests = async () => {
@@ -57,28 +57,28 @@ const AppProvider = ({children}) => {
         setIsLoading(false);
 
     }  
-    const getJudgeAssessment = async (test) => {
-        console.log("getting assessment from judge...");
-        //setIsLoading(true);
-        const judgeData = {
-            source_code : test.source_cod,
-            language_id : test.language_id,
-            stdin : test.stdin
-        }
-        console.log(test.source_cod)
-        const response  = await axios({
-            method : "post",
-            url : `${rootURL}/questions/assess/${test.questionId}/${test.id}/1`,
-            data: judgeData
-        })
-        .catch((err) => console.log(err));
+    // const getJudgeAssessment = async (test) => {
+    //     console.log("getting assessment from judge...");
+    //     //setIsLoading(true);
+    //     const judgeData = {
+    //         source_code : test.source_cod,
+    //         language_id : test.language_id,
+    //         stdin : test.stdin
+    //     }
+    //     console.log(test.source_cod)
+    //     const response  = await axios({
+    //         method : "post",
+    //         url : `${rootURL}/questions/assess/${test.questionId}/${test.id}/1`,
+    //         data: judgeData
+    //     })
+    //     .catch((err) => console.log(err));
 
-        if(response) {
-            console.log(response.data)
-            setJudgeResponse(response.data);
-        }
-        //setIsLoading(false);
-    }
+    //     if(response) {
+    //         console.log(response.data)
+    //         setJudgeResponse(response.data);
+    //     }
+    //     //setIsLoading(false);
+    // }
     function encode(str) {
         return btoa(unescape(encodeURIComponent(str || "")));
       }      
@@ -97,7 +97,7 @@ const AppProvider = ({children}) => {
     {{
         tests, isLoading, getStudentTests, showNavbar,
         setShowNavbar, testQuestions, getTestQuestions,
-        aceLanguages, judgeResponse, getJudgeAssessment,
+        aceLanguages, 
         codeEditorText, setCodeEditorText, encode, decode,
 
     }}>{children} </AppContext.Provider>

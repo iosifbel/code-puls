@@ -13,7 +13,7 @@ const  judgeHeaders = {
     "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
     useQueryString: true, 
 }
-const judgeURLDefaultParams = "?base64_encoded=true&wait=true&fields=*"
+const judgeURLDefaultParams = "?base64_encoded=true&wait=true"
 
 const controller = {
     getById: async (req, res) => {
@@ -48,7 +48,7 @@ const controller = {
           return axios({
             method: 'get',
             headers: judgeHeaders,
-            url: judgeURL + token,            
+            url: judgeURL + token + judgeURLDefaultParams,            
           })
           .then(function (response) {
             console.log(response.data);

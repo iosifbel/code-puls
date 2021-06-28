@@ -4,7 +4,8 @@ import styled from "styled-components";
 import React, {useEffect, useState} from "react"
 import {AppContext} from "../context/context"
 import DefaultCode from "../components/defaultCodeData"
-
+import axios from "axios";
+const rootURL = "http://localhost:5000/api";
 
 function TakeTest({test}) {  
   const {setShowNavbar} = React.useContext(AppContext);
@@ -12,15 +13,17 @@ function TakeTest({test}) {
 
   const {
     testQuestions, getTestQuestions, isLoading,
-    aceLanguages, getJudgeAssessment, judgeResponse,
-    codeEditorText, setCodeEditorText, encode    
+    aceLanguages,
+    codeEditorText, setCodeEditorText, encode,decode    
       } = React.useContext(AppContext);  
 
   const [language, setLanguage] = useState("javascript")  
   const [stdout, setStdout] = useState(" ");
+  const [compileError,setCompileError] = useState();
   const [testCaseStatus, setTestCaseStatus]=useState(" ");
+  const [judgeResponse, setJudgeResponse] = useState();
+  const [isConsoleLoading, setIsConsoleLoading] = useState(false)
   
-
   useEffect(() => {    
     getTestQuestions(test.id);
     const aceLanguage = aceLanguages.find((language => language.id == test.id_limbaj_programare))
@@ -38,12 +41,14 @@ function TakeTest({test}) {
 useEffect(() => {
   console.log("judge response changed");
   if(judgeResponse) {
-    setStdout(judgeResponse.stdout)
+    setStdout(decode(judgeResponse.stdout))
     setTestCaseStatus(judgeResponse.status.description)
+    setCompileError(decode(judgeResponse.compile_output))
   }
 }, [judgeResponse])
 
   function executaBtnHandler() {
+    if(!isConsoleLoading){
       console.log("buton executa apasat")
       const assignment = {
         id : test.id,
@@ -54,13 +59,35 @@ useEffect(() => {
       }
       console.log(assignment);
       getJudgeAssessment(assignment)
+    }
   }
 
   function getCodeEditorTextCallback(text) {
     // setCodeEditorText(text);    
   }
 
+  const getJudgeAssessment = async (test) => {
+    console.log("getting assessment from judge...");
+    setIsConsoleLoading(true);
+    const judgeData = {
+        source_code : test.source_cod,
+        language_id : test.language_id,
+        stdin : test.stdin
+    }
+    console.log(test.source_cod)
+    const response  = await axios({
+        method : "post",
+        url : `${rootURL}/questions/assess/${test.questionId}/${test.id}/1`,
+        data: judgeData
+    })
+    .catch((err) => console.log(err));
 
+    if(response) {
+        console.log(response.data)
+        setJudgeResponse(response.data);
+    }
+    setIsConsoleLoading(false);
+}
 
 
 
@@ -84,21 +111,27 @@ if(isLoading) {
         <ExecuteBtn primary onClick={executaBtnHandler}>Executa</ExecuteBtn>
           <ConsoleCard>
             <div> <p>Output:</p>
-            {stdout && (
+            {!isConsoleLoading && stdout && (
               <p>{stdout}</p>
             )}
-            {!stdout && (
+            {isConsoleLoading && (
               <p>Loading...</p>
             )}
             </div>
             <div><p>Test Case Status:</p>
-            {testCaseStatus && (
+            {!isConsoleLoading && testCaseStatus && (
               <p>{testCaseStatus}</p>
             )}
-            {!testCaseStatus && (
+            {isConsoleLoading && (
               <p>Loading...</p>
             )}
             </div>
+            {!isConsoleLoading && compileError && (
+              <div>
+              <div><p>Compile Error:</p></div>
+              <p>{compileError}</p>
+              </div>
+            )}
            
           </ConsoleCard>
         <SubmitBtn secondary>Trimite</SubmitBtn>
@@ -106,6 +139,7 @@ if(isLoading) {
     </div>
   );
 }
+
 
 
 const LoadingWrapper = styled.section `
@@ -216,7 +250,7 @@ const Wrapper = styled.section`
 `;
 const ProblemCard = styled(Card)`
   grid-area: A;  
- 
+  
   overflow:auto;
   
   
@@ -237,6 +271,7 @@ const ConsoleCard = styled(Card)`
   flex-direction: row;
   justify-content: space-between;
   overflow:auto;
+  flex-wrap: wrap;
 `;
 const ExecuteBtn = styled(Button)`
   height: 50px;
