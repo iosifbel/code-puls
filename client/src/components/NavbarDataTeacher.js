@@ -13,7 +13,7 @@ export const NavbarDataTeacher = [
   },
   {
     title: "Adaugă test",
-    path: "/history",
+    path: "/addTest",
     icon: <MdIcons.MdHistory />,
   },
   {

@@ -7,6 +7,7 @@ import {
   Tests,
   Settings,
   History,
+  AddTest
 } from "./pages";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -18,17 +19,20 @@ function App() {
   return (
     <Router>
       <Header></Header>
-      <Navbar type = "student"></Navbar>
+      <Navbar type = "teacher"></Navbar>
       <Switch>
         <Route path="/" exact={true}>
-          <Dashboard type="student"></Dashboard>
+          <Dashboard type="teacher"></Dashboard>
         </Route>
         <Route path="/tests">
           <Tests></Tests>
         </Route>
         <Route path="/history">
           <History></History>
-        </Route>
+        </Route>  
+        <Route path="/addTest">
+          <AddTest></AddTest>
+        </Route>       
         <Route path="/settings">
           <Settings></Settings>
         </Route>

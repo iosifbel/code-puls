@@ -6,5 +6,6 @@ import Tests from "./tests";
 import History from "./history";
 import Settings from "./settings";
 import TakeTest from "./takeTest";
+import AddTest from "./addTest";
 
-export { Login, Register, Dashboard, Error, Tests, History, Settings, TakeTest};
+export { Login, Register, Dashboard, Error, Tests, History, Settings, TakeTest, AddTest};
