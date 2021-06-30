@@ -9,7 +9,7 @@ import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { MdAddCircleOutline } from "react-icons/md";
+import { MdAddCircleOutline, MdRemoveCircleOutline } from "react-icons/md";
 
 const rootURL = "http://localhost:5000/api";
 
@@ -27,7 +27,10 @@ function AddTest() {
   const [code, setCode] = useState();
   const [expectedAnswer, setExpectedAnswer] = useState("");
   const [date, setDate] = useState(new Date());
-  const [questions, setQuestions] = useState([{ id: 1, questionBody: "" }]);
+  const [questions, setQuestions] = useState([
+    { id: 0, questionBody: "", expectedAnswer: "" },
+  ]);
+  // const [expectedAnswers, setExpectedAnswers] = useState([])
 
   //onMount
   useEffect(() => {
@@ -92,8 +95,64 @@ function AddTest() {
 
   function addQuestionBtnHandler(e) {
     console.log("addQuestionBtnHandler");
-    const question = { id: 2, questionBody: "" };
-    setQuestions((questions) => questions.concat(question));
+    console.log(questions.length - 1);
+    const lastQuestion = questions[questions.length - 1];
+    console.log(lastQuestion);
+    setQuestions((questions) =>
+      questions.concat({
+        id: lastQuestion.id + 1,
+        questionBody: "",
+        expectedAnswer: "",
+      })
+    );
+  }
+  function removeQuestionBtnHandler(e) {
+    console.log("removeQuestionBtnHandler");
+    const lastQuestion = questions[questions.length - 1];
+    setQuestions((items) =>
+      items.filter((item) => {
+        return item.id !== lastQuestion.id;
+      })
+    );
+  }
+  function handleQuestionsChange(e, index) {
+    // 1. Make a shallow copy of the array
+    console.log(index);
+    let temp_state = [...questions];
+
+    // 2. Make a shallow copy of the element you want to mutate
+    let temp_element = { ...questions.find((x) => x.id === index) };
+
+    // 3. Update the property you're interested in
+    temp_element.questionBody = e.target.value;
+
+    // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
+    temp_state[index] = temp_element;
+
+    // 5. Set the state to our new copy
+    setQuestions(temp_state);
+    // console.log(questions.find((x) => x.id === index).questionBody);
+    console.log(questions);
+  }
+
+  function handleExpectedResultChange(e, index) {
+    // 1. Make a shallow copy of the array
+    console.log(index);
+    let temp_state = [...questions];
+
+    // 2. Make a shallow copy of the element you want to mutate
+    let temp_element = { ...questions.find((x) => x.id === index) };
+
+    // 3. Update the property you're interested in
+    temp_element.expectedAnswer = e.target.value;
+
+    // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
+    temp_state[index] = temp_element;
+
+    // 5. Set the state to our new copy
+    setQuestions(temp_state);
+    // console.log(questions.find((x) => x.id === index).questionBody);
+    console.log(questions);
   }
 
   function handleSubmit(e) {
@@ -102,10 +161,10 @@ function AddTest() {
       selectedSubject,
       selectedGroup,
       language,
-      code,
-      expectedAnswer,
+      questions,
       date,
     };
+    console.log(test);
     //   const test = {
     //     titlu : title,
     //     deadline : date,
@@ -172,29 +231,39 @@ function AddTest() {
             ))}
           </Form.Control>
         </Form.Group>
-        {questions.map((question) => (
-          <Form.Row className="questionRow">
-            <Form.Group as={Col} controlId="Problem">
-              <Form.Label>Problema {question.id}</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={1}
-                onChange={(e) => setCode(e.target.value)}
-              />
-            </Form.Group>
-            <Col>
-              <Form.Label>Rezultat așteptat</Form.Label>
-              <Form.Control
-                value={expectedAnswer}
-                onChange={(e) => setExpectedAnswer(e.target.value)}
-              />
-            </Col>
-            <MdAddCircleOutline
-              className="addQuestionBtn"
-              onClick={addQuestionBtnHandler}
-            ></MdAddCircleOutline>
-          </Form.Row>
-        ))}
+        <div className="questionsContainer">
+          {questions.map((question, index) => (
+            <Form.Row className="questionRow">
+              <Form.Group as={Col} controlId="Problem">
+                <Form.Label>Problema {question.id}</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={1}
+                  // value={questions.find((x) => x.id === index).questionBody}
+                  onChange={(e) => handleQuestionsChange(e, index)}
+                />
+              </Form.Group>
+              <Col>
+                <Form.Label>Rezultat așteptat</Form.Label>
+                <Form.Control
+                  // value={questions.find((x) => x.id === index).expectedAnswer}
+                  onChange={(e) => handleExpectedResultChange(e, index)}
+                />
+              </Col>
+              {!questions[index + 1] && index !== 0 ? (
+                <MdRemoveCircleOutline
+                  className="addQuestionBtn"
+                  onClick={removeQuestionBtnHandler}
+                ></MdRemoveCircleOutline>
+              ) : (
+                <MdAddCircleOutline
+                  className="addQuestionBtn"
+                  onClick={addQuestionBtnHandler}
+                ></MdAddCircleOutline>
+              )}
+            </Form.Row>
+          ))}
+        </div>
         <Form.Row>
           <Col className="datePickerColumn">
             <DatePicker
@@ -251,22 +320,39 @@ const FormTitle = styled.p`
   display: flex;
   justify-content: center;
   font-size: 2rem;
-  margin-bottom: 2em;
+  margin-bottom: 1em;
 `;
 
 const Wrapper = styled(Card)`
   display: flex;
   flex-direction: column;
-  width: 50%;
+  width: 40%;
   margin-left: 37%;
   height: 100%;
   margin-top: 3%;
-  padding-left: 5%;
-  padding-right: 5%;
+  // padding-left: 5%;
+  // padding-right: 5%;
+  // padding-bottom: 5%;
+  // padding-top: 5%;
+
+  .addTestForm {
+    height: 100%;
+    width: 100%;
+  }
+  .plus {
+    margin-right: 10px;
+  }
+  .questionsContainer {
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 
   .addQuestionBtn {
     align-self: center;
     margin-top: 15px;
+    margin-right: 15px;
+    margin-left: 15px;
     cursor: pointer;
   }
 
