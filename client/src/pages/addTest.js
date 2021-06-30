@@ -182,6 +182,13 @@ function AddTest() {
                 onChange={(e) => setCode(e.target.value)}
               />
             </Form.Group>
+            <Col>
+              <Form.Label>Rezultat așteptat</Form.Label>
+              <Form.Control
+                value={expectedAnswer}
+                onChange={(e) => setExpectedAnswer(e.target.value)}
+              />
+            </Col>
             <MdAddCircleOutline
               className="addQuestionBtn"
               onClick={addQuestionBtnHandler}
@@ -189,13 +196,6 @@ function AddTest() {
           </Form.Row>
         ))}
         <Form.Row>
-          <Col>
-            <Form.Control
-              placeholder="Rezultat așteptat"
-              value={expectedAnswer}
-              onChange={(e) => setExpectedAnswer(e.target.value)}
-            />
-          </Col>
           <Col className="datePickerColumn">
             <DatePicker
               wrapperClassName="datepicker"
