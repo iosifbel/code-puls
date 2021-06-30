@@ -18,10 +18,10 @@ function App() {
   return (
     <Router>
       <Header></Header>
-      <Navbar type="student"></Navbar>
+      <Navbar type="teacher"></Navbar>
       <Switch>
         <Route path="/" exact={true}>
-          <Dashboard type="student"></Dashboard>
+          <Dashboard type="teacher"></Dashboard>
         </Route>
         <Route path="/tests">
           <Tests></Tests>

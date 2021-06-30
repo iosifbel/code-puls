@@ -12,7 +12,7 @@ $mainBlack: #515b68;
 html,
 body {
   font-family: "Roboto", sans-serif;
-  background: $mainGrey;
+  background: $mainGrey !important;
   color: $mainBlack;
   // min-height: 100% !important;
   height: 100%;
@@ -21,11 +21,4 @@ body {
 
 a {
   font-family: "Roboto", sans-serif;
-}
-
-.timePickerBox {
-  border: 1px solid #bac1c9;
-  box-sizing: border-box;
-  border-radius: 5px;
-  padding: 5px;
 }

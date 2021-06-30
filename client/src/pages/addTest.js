@@ -2,13 +2,14 @@ import styled from "styled-components";
 import { Form, Col } from "react-bootstrap";
 import { AppContext } from "../context/context";
 import React, { useState, useEffect } from "react";
-import { Button } from "../components/defaultComponents";
+import { Button, Card } from "../components/defaultComponents";
 import theme from "../Assets/theme";
 import { Loader } from "../components";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-// import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { MdAddCircleOutline } from "react-icons/md";
 
 const rootURL = "http://localhost:5000/api";
 
@@ -26,6 +27,7 @@ function AddTest() {
   const [code, setCode] = useState();
   const [expectedAnswer, setExpectedAnswer] = useState("");
   const [date, setDate] = useState(new Date());
+  const [questions, setQuestions] = useState([{ id: 1, questionBody: "" }]);
 
   //onMount
   useEffect(() => {
@@ -88,6 +90,12 @@ function AddTest() {
   //     setIsLoading(false);
   // }
 
+  function addQuestionBtnHandler(e) {
+    console.log("addQuestionBtnHandler");
+    const question = { id: 2, questionBody: "" };
+    setQuestions((questions) => questions.concat(question));
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
     const test = {
@@ -114,8 +122,8 @@ function AddTest() {
 
   return (
     <Wrapper>
-      <FormTitle>Adaugă Test</FormTitle>
-      <Form>
+      <FormTitle className="formTitle">Adaugă Test</FormTitle>
+      <Form className="addTestForm">
         <Form.Row>
           <Form.Group as={Col} controlId="subjects">
             <Form.Label>Materie</Form.Label>
@@ -164,14 +172,22 @@ function AddTest() {
             ))}
           </Form.Control>
         </Form.Group>
-        <Form.Group controlId="Problem">
-          <Form.Label>Problemă</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={10}
-            onChange={(e) => setCode(e.target.value)}
-          />
-        </Form.Group>
+        {questions.map((question) => (
+          <Form.Row className="questionRow">
+            <Form.Group as={Col} controlId="Problem">
+              <Form.Label>Problema {question.id}</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={1}
+                onChange={(e) => setCode(e.target.value)}
+              />
+            </Form.Group>
+            <MdAddCircleOutline
+              className="addQuestionBtn"
+              onClick={addQuestionBtnHandler}
+            ></MdAddCircleOutline>
+          </Form.Row>
+        ))}
         <Form.Row>
           <Col>
             <Form.Control
@@ -180,7 +196,7 @@ function AddTest() {
               onChange={(e) => setExpectedAnswer(e.target.value)}
             />
           </Col>
-          <Col>
+          <Col className="datePickerColumn">
             <DatePicker
               wrapperClassName="datepicker"
               customInput={<ExampleCustomInput />}
@@ -191,6 +207,8 @@ function AddTest() {
               timeIntervals={15}
               timeCaption="Timp"
               dateFormat="MMMM d, yyyy h:mm aa"
+              fixedHeight
+              popperPlacement="top-end"
             />
           </Col>
         </Form.Row>
@@ -207,6 +225,7 @@ function AddTest() {
 
 const ExampleCustomInput = React.forwardRef(({ value, onClick }, ref) => (
   <div className="timePickerBox" onClick={onClick} ref={ref}>
+    <div className="deadlineText">{`Deadline:`}</div>
     {value}
   </div>
 ));
@@ -215,27 +234,67 @@ const SendBtn = styled(Button)`
   background: ${theme.mainBlue};
   color: white;
   margin-top: 2em;
+  font-size: 1rem;
+  font-weight: 400;
+  height: 50px;
+  width: 150px;
+
   &:hover {
     background: ${theme.mainBlue};
     color: white;
     font-weight: normal;
+    f
   }
 `;
 
 const FormTitle = styled.p`
   display: flex;
   justify-content: center;
-  font-size: 2em;
+  font-size: 2rem;
   margin-bottom: 2em;
 `;
 
-const Wrapper = styled.section`
+const Wrapper = styled(Card)`
   display: flex;
   flex-direction: column;
-  width: 35%;
-  margin-left: 45%;
+  width: 50%;
+  margin-left: 37%;
   height: 100%;
-  margin-top: 5%;
+  margin-top: 3%;
+  padding-left: 5%;
+  padding-right: 5%;
+
+  .addQuestionBtn {
+    align-self: center;
+    margin-top: 15px;
+    cursor: pointer;
+  }
+
+  .datePickerColumn {
+    display: flex;
+    justify-content: center;
+  }
+
+  .timePickerBox {
+    display: flex;
+    width: 100%;
+    height: calc(1.5em + 0.75rem + 2px);
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+
+  .deadlineText {
+    margin-right: 10px;
+    font-weight: 600;
+  }
 `;
 
 export default AddTest;
