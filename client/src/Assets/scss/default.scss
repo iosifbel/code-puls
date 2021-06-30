@@ -14,8 +14,18 @@ body {
   font-family: "Roboto", sans-serif;
   background: $mainGrey;
   color: $mainBlack;
+  // min-height: 100% !important;
+  height: 100%;
+  width: 100%;
 }
+
 a {
   font-family: "Roboto", sans-serif;
 }
 
+.timePickerBox {
+  border: 1px solid #bac1c9;
+  box-sizing: border-box;
+  border-radius: 5px;
+  padding: 5px;
+}

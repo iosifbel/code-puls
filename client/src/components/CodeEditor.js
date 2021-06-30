@@ -5,7 +5,7 @@ import { AppContext } from "../context/context";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/ext-language_tools";
 
-const defaultCode = "#include<iostream>\n\nint main(){\n\n\n return 0;\n}"
+
 
 function CodeEditor(props) {
   require(`ace-builds/src-noconflict/mode-${props.language}`);

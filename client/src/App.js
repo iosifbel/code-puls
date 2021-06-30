@@ -7,10 +7,9 @@ import {
   Tests,
   Settings,
   History,
-  AddTest
+  AddTest,
 } from "./pages";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
 
 import Navbar from "./components/Navbar";
 import Header from "./components/Header";
@@ -19,20 +18,20 @@ function App() {
   return (
     <Router>
       <Header></Header>
-      <Navbar type = "teacher"></Navbar>
+      <Navbar type="student"></Navbar>
       <Switch>
         <Route path="/" exact={true}>
-          <Dashboard type="teacher"></Dashboard>
+          <Dashboard type="student"></Dashboard>
         </Route>
         <Route path="/tests">
           <Tests></Tests>
         </Route>
         <Route path="/history">
           <History></History>
-        </Route>  
+        </Route>
         <Route path="/addTest">
           <AddTest></AddTest>
-        </Route>       
+        </Route>
         <Route path="/settings">
           <Settings></Settings>
         </Route>

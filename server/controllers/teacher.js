@@ -24,7 +24,7 @@ const controller = {
   getSubjects: async (req, res) => {
     connection.query(
       mysql.format(
-        "SELECT m.id, m.descriere, m.an, s.grupa FROM materii m JOIN studenti s ON s.id = ( SELECT MIN(im.id_student) FROM inrolare_materie im WHERE im.id_materie = m.id ) WHERE m.id_profesor = ?",
+        "SELECT m.id, m.descriere, m.an FROM materii m WHERE m.id_profesor = ?",
         [req.params.teacher_id]
       ),
 

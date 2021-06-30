@@ -4,14 +4,18 @@ import { MdMenu } from "react-icons/md";
 import { Nav } from "react-bootstrap";
 import styled from "styled-components";
 import logo from "../Assets/logo.svg";
-import {useHistory} from "react-router-dom"
+import { useHistory } from "react-router-dom";
+import React from "react";
+import { AppContext } from "../context/context";
 
 function Header() {
-  const history = useHistory()
+  const { showHeader } = React.useContext(AppContext);
+  const history = useHistory();
   function goBack() {
     history.goBack();
   }
-  return (
+  console.log(showHeader);
+  return !showHeader ? null : (
     <div>
       <DefaultNavbar>
         <Wrapper>
@@ -41,7 +45,7 @@ const Wrapper = styled.section`
   display: grid;
   width: 100%;
   grid-template-areas: "A    B   B   C";
-  z-index : 100;
+  z-index: 100;
 `;
 
 const StyledArrow = styled(Nav.Link)`

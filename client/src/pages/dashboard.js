@@ -1,17 +1,18 @@
-
 import styled from "styled-components";
 import React from "react";
+import { AppContext } from "../context/context";
 
-
-function Dashboard(props) {  
+function Dashboard(props) {
+  const { setShowHeader } = React.useContext(AppContext);
+  setShowHeader(false);
   return (
     <Wrapper>
-    {" "}
-    <div>
-      <h1>Panou de lucru</h1>
-      <h2>{props.type ? props.type : "none"}</h2>     
-    </div>
-  </Wrapper>
+      {" "}
+      <div>
+        <h1>Panou de lucru</h1>
+        <h2>{props.type ? props.type : "none"}</h2>
+      </div>
+    </Wrapper>
   );
 }
 
