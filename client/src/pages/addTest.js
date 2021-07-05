@@ -14,8 +14,9 @@ import { MdAddCircleOutline, MdRemoveCircleOutline } from "react-icons/md";
 const rootURL = "http://localhost:5000/api";
 
 function AddTest() {
-  const { judge0Languges, isLoading, setIsLoading } =
+  const { judge0Languges, isLoading, setIsLoading, setShowHeader } =
     React.useContext(AppContext);
+  setShowHeader(false);
   const [subjects, setSubjects] = useState([]);
   const [groups, setGroups] = useState();
   const [areGroupsLoading, setAreGroupsLoading] = useState(true);
@@ -25,6 +26,7 @@ function AddTest() {
   const [selectedGroup, setSelectedGroup] = useState();
   const [language, setLanguage] = useState(judge0Languges[0].id);
   const [code, setCode] = useState();
+  const [title, setTitle] = useState();
   const [expectedAnswer, setExpectedAnswer] = useState("");
   const [date, setDate] = useState(new Date());
   const [questions, setQuestions] = useState([
@@ -74,30 +76,11 @@ function AddTest() {
     setIsLoading(false);
   }
 
-  //   async function postTest(test) {
-  //     console.log("posting assignment...");
-  //     setIsLoading(true);
-
-  //     console.log(test.source_cod)
-  //     const response  = await axios({
-  //         method : "post",
-  //         url : `${rootURL}/questions/assess/${test.questionId}/${test.id}/1`,
-  //         data: judgeData
-  //     })
-  //     .catch((err) => console.log(err));
-
-  //     if(response) {
-  //         console.log(response.data)
-  //         setJudgeResponse(response.data);
-  //     }
-  //     setIsLoading(false);
-  // }
-
   function addQuestionBtnHandler(e) {
     console.log("addQuestionBtnHandler");
-    console.log(questions.length - 1);
+
     const lastQuestion = questions[questions.length - 1];
-    console.log(lastQuestion);
+
     setQuestions((questions) =>
       questions.concat({
         id: lastQuestion.id + 1,
@@ -132,7 +115,6 @@ function AddTest() {
     // 5. Set the state to our new copy
     setQuestions(temp_state);
     // console.log(questions.find((x) => x.id === index).questionBody);
-    console.log(questions);
   }
 
   function handleExpectedResultChange(e, index) {
@@ -152,26 +134,38 @@ function AddTest() {
     // 5. Set the state to our new copy
     setQuestions(temp_state);
     // console.log(questions.find((x) => x.id === index).questionBody);
-    console.log(questions);
   }
 
   function handleSubmit(e) {
     e.preventDefault();
+
     const test = {
-      selectedSubject,
-      selectedGroup,
-      language,
-      questions,
-      date,
+      title: title,
+      deadline: date,
+      subjectId: selectedSubject,
+      languageId: language,
+      questions: questions,
+      group: selectedGroup,
     };
     console.log(test);
-    //   const test = {
-    //     titlu : title,
-    //     deadline : date,
-    //     id_materie : test.id_materie,
-    //     id_limbaj_programare: test.id_limbaj_programare,
-    //     grupa: test.grupa,
-    // }
+    postTest(test);
+    console.log(date.getTimezoneOffset());
+  }
+
+  async function postTest(test) {
+    console.log("posting assignment...");
+    setIsLoading(true);
+
+    const response = await axios({
+      method: "post",
+      url: `${rootURL}/assignments/create`,
+      data: test,
+    }).catch((err) => console.log(err));
+
+    if (response) {
+      console.log(response.data);
+    }
+    setIsLoading(false);
   }
 
   if (isLoading) {
@@ -183,6 +177,25 @@ function AddTest() {
     <Wrapper>
       <FormTitle className="formTitle">Adaugă Test</FormTitle>
       <Form className="addTestForm">
+        <Form.Row>
+          <Form.Group as={Col} controlId="testTitle">
+            <Form.Label>Titlu test</Form.Label>
+            <Form.Control onChange={(e) => setTitle(e.target.value)} />
+          </Form.Group>
+          <Form.Group as={Col} controlId="programmingLanguages">
+            <Form.Label>Limbaj de programare</Form.Label>
+            <Form.Control
+              as="select"
+              onChange={(e) => setLanguage(e.target.value)}
+            >
+              {judge0Languges.map((language) => (
+                <option value={language.id} key={language.id}>
+                  {language.name}
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+        </Form.Row>
         <Form.Row>
           <Form.Group as={Col} controlId="subjects">
             <Form.Label>Materie</Form.Label>
@@ -218,19 +231,6 @@ function AddTest() {
           </Form.Group>
         </Form.Row>
 
-        <Form.Group controlId="programmingLanguages">
-          <Form.Label>Limbaj de programare</Form.Label>
-          <Form.Control
-            as="select"
-            onChange={(e) => setLanguage(e.target.value)}
-          >
-            {judge0Languges.map((language) => (
-              <option value={language.id} key={language.id}>
-                {language.name}
-              </option>
-            ))}
-          </Form.Control>
-        </Form.Group>
         <div className="questionsContainer">
           {questions.map((question, index) => (
             <Form.Row className="questionRow">
@@ -275,7 +275,7 @@ function AddTest() {
               timeFormat="HH:mm"
               timeIntervals={15}
               timeCaption="Timp"
-              dateFormat="MMMM d, yyyy h:mm aa"
+              dateFormat="d MMMM, yyyy HH:mm"
               fixedHeight
               popperPlacement="top-end"
             />
@@ -329,10 +329,11 @@ const Wrapper = styled(Card)`
   width: 40%;
   margin-left: 37%;
   height: 100%;
-  margin-top: 3%;
+
+  margin-top: 7%;
   // padding-left: 5%;
   // padding-right: 5%;
-  // padding-bottom: 5%;
+  // padding-bottom: 10%;
   // padding-top: 5%;
 
   .addTestForm {
@@ -343,7 +344,7 @@ const Wrapper = styled(Card)`
     margin-right: 10px;
   }
   .questionsContainer {
-    max-height: 200px;
+    max-height: 12em;
     overflow-y: auto;
     overflow-x: hidden;
   }

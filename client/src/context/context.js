@@ -26,7 +26,9 @@ const AppProvider = ({ children }) => {
   const [tests, setTests] = useState([]);
   const [showNavbar, setShowNavbar] = useState(true);
   const [showHeader, setShowHeader] = useState(true);
-  const [testQuestions, setTestQuestions] = useState([]);
+  const [testQuestions, setTestQuestions] = useState([
+    { id: -1, descriere: "", raspunsuri: "" },
+  ]);
   const [aceLanguages] = useState(ace);
   // const [judgeResponse, setJudgeResponse] = useState();
   const [codeEditorText, setCodeEditorText] = useState("#include<iostream>");

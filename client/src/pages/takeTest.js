@@ -105,9 +105,10 @@ function TakeTest({ test }) {
     <div>
       <Wrapper>
         <ProblemCard>
-          {testQuestions.map((question) => (
+          {/* {testQuestions.map((question) => (
             <h3>{question.descriere}</h3>
-          ))}
+          ))} */}
+          <h3>{testQuestions[0].descriere}</h3>
         </ProblemCard>
         <EditorCard>
           <CodeEditor language={language}></CodeEditor>
@@ -145,7 +146,8 @@ function TakeTest({ test }) {
 const Wrapper = styled.section`
   display: grid;
   height: 100%;
-  width: 100vw;
+  width: 100%;
+  max-height: 700px;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(10, 1fr);
   grid-template-areas:
@@ -164,6 +166,7 @@ const Wrapper = styled.section`
 const ProblemCard = styled(Card)`
   grid-area: A;
   overflow: auto;
+  margin-left: 2em;
 `;
 const EditorCard = styled(Card)`
   grid-area: B;

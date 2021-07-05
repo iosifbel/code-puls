@@ -44,10 +44,10 @@ const controller = {
       mysql.format(
         "INSERT INTO `teste` (`id`, `titlu`, `deadline`, `id_materie`, `id_limbaj_programare`) VALUES (NULL, ?, ?, ?, ?);",
         [
-          req.body.titlu,
+          req.body.title,
           req.body.deadline,
-          req.body.id_materie,
-          req.body.id_limbaj_programare,
+          req.body.subjectId,
+          req.body.languageId,
         ]
       ),
 
@@ -59,10 +59,48 @@ const controller = {
               if (!err) {
                 const id_test = result[0]["LAST_INSERT_ID()"];
 
+                const questions = req.body.questions;
+                for (let i = 0; i < questions.length; i++) {
+                  connection.query(
+                    mysql.format(
+                      "INSERT INTO `intrebari` (`id`, `descriere`, `raspunsuri`) VALUES (NULL, ?, ?);",
+                      [questions[i].questionBody, questions[i].expectedAnswer]
+                    ),
+                    (err, result) => {
+                      if (!err) {
+                        connection.query(
+                          mysql.format("SELECT LAST_INSERT_ID()"),
+                          (err, result) => {
+                            if (!err) {
+                              const id_question = result[0]["LAST_INSERT_ID()"];
+                              connection.query(
+                                mysql.format(
+                                  "INSERT INTO `teste_intrebari` (id_test, id_intrebare) VALUES (?, ?);",
+                                  [id_test, id_question]
+                                ),
+                                (err, result) => {
+                                  if (!err) {
+                                  } else {
+                                    res.status(500).send("Server error" + err);
+                                  }
+                                }
+                              );
+                            } else {
+                              res.status(500).send("Server error" + err);
+                            }
+                          }
+                        );
+                      } else {
+                        res.status(500).send("Server error" + err);
+                      }
+                    }
+                  );
+                }
+
                 connection.query(
                   mysql.format(
                     "INSERT INTO note (id_student, id_test) SELECT s.ID, t.ID FROM studenti s, teste t WHERE t.id=? AND s.grupa=?",
-                    [id_test, req.body.grupa]
+                    [id_test, req.body.group]
                   ),
                   (err, result) => {
                     if (!err) {
