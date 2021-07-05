@@ -30,13 +30,24 @@ function Login() {
     password: yup.string().required("Nicio parolă introdusă"),
   });
 
+  function submitHandler(values) {
+    console.log({
+      email: values.email,
+      password: values.password,
+      type: type,
+    });
+  }
+
   return (
     <Wrapper>
       <FormCard>
         <Formik
           validationSchema={schema}
+          // onSubmit={(values) => {
+          //   alert(JSON.stringify(values, null, 2));
+          // }}
           onSubmit={(values) => {
-            alert(JSON.stringify(values, null, 2));
+            submitHandler(values);
           }}
           initialValues={{
             email: "",
