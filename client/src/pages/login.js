@@ -6,58 +6,123 @@ import styled from "styled-components";
 import { Form, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import theme from "../Assets/theme";
+import { Formik, useFormik } from "formik";
+import * as yup from "yup";
 
 function Login() {
   const { setShowNavbar, setShowHeader } = React.useContext(AppContext);
   setShowNavbar(false);
   setShowHeader(false);
+  const [type, setType] = useState("student");
+
+  const schema = yup.object().shape({
+    email: yup
+      .string()
+      .matches(
+        type === "student" ? /(@stud.ase.ro)/ : /(@ie.ase.ro)/,
+        "Adresă nepotrivită pentru tipul de utilizator",
+        {
+          excludeEmptyString: true,
+        }
+      )
+      .email("Adresă de email invalidă")
+      .required("Nicio adresă de email"),
+    password: yup.string().required("Nicio parolă introdusă"),
+  });
 
   return (
     <Wrapper>
       <FormCard>
-        <Form>
-          <Form.Group controlId="formBasicEmail">
-            <Form.Label>Adresă de email</Form.Label>
-            <Form.Control type="email" placeholder="Introdu email" />
-          </Form.Group>
-          <Form.Group controlId="formBasicPassword">
-            <Form.Label>Parolă</Form.Label>
-            <Form.Control type="password" placeholder="Introdu Parola" />
-          </Form.Group>
-          <Form.Group controlId="formBasicCheckbox">
-            <Form.Label>Tip cont</Form.Label>
-            <Form.Control as="select">
-              <option>Student</option>
-              <option>Profesor</option>
-            </Form.Control>
-          </Form.Group>
-          <Form.Row className="justify-content-center">
-            <Link to="/" className="loginLink">
-              <LoginBtn variant="primary" type="submit">
-                <p>Login</p>
-              </LoginBtn>
-            </Link>
-          </Form.Row>
+        <Formik
+          validationSchema={schema}
+          onSubmit={(values) => {
+            alert(JSON.stringify(values, null, 2));
+          }}
+          initialValues={{
+            email: "",
+            password: "",
+            type: type,
+          }}
+        >
+          {({
+            handleSubmit,
+            handleChange,
+            handleBlur,
+            values,
+            touched,
+            isValid,
+            errors,
+          }) => (
+            <Form noValidate onSubmit={handleSubmit}>
+              <Form.Group controlId="formBasicEmail">
+                <Form.Label>Adresă de email</Form.Label>
+                <Form.Control
+                  name="email"
+                  type="email"
+                  value={values.email}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  placeholder="Introdu email"
+                  isValid={touched.email && !errors.email}
+                  isInvalid={touched.email && !!errors.email}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.email}
+                </Form.Control.Feedback>
+              </Form.Group>
+              <Form.Group controlId="formBasicPassword">
+                <Form.Label>Parolă</Form.Label>
+                <Form.Control
+                  name="password"
+                  type="password"
+                  value={values.password}
+                  placeholder="Introdu Parola"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isValid={touched.password && !errors.password}
+                  isInvalid={touched.password && !!errors.password}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.password}
+                </Form.Control.Feedback>
+              </Form.Group>
+              <Form.Group controlId="formBasicCheckbox">
+                <Form.Label>Tip cont</Form.Label>
+                <Form.Control
+                  as="select"
+                  name="type"
+                  value={type}
+                  onChange={(e) => {
+                    setType(e.target.value);
+                  }}
+                  onBlur={handleBlur}
+                >
+                  <option value="student">Student</option>
+                  <option value="teacher">Profesor</option>
+                </Form.Control>
+              </Form.Group>
+              <Form.Row className="justify-content-center">
+                {/* <Link to="/" className="loginLink"> */}
+                <LoginBtn variant="primary" type="submit">
+                  <p>Login</p>
+                </LoginBtn>
+                {/* </Link> */}
+              </Form.Row>
 
-          <div class="sau">
-            <p>
-              <span>sau</span>
-            </p>
-          </div>
+              <div class="sau">
+                <p>
+                  <span>sau</span>
+                </p>
+              </div>
 
-          <Form.Row className="justify-content-center">
-            <RegisterBtn variant="secondary" type="submit">
-              Register
-            </RegisterBtn>
-          </Form.Row>
-        </Form>
-        {/* <h1>Login Page</h1>
-        <Link to="/" className="btn">
-          Login
-        </Link>
-        <Link to="/register" className="btn">
-          Creează cont
-        </Link> */}
+              <Form.Row className="justify-content-center">
+                <RegisterBtn variant="secondary" type="submit">
+                  Register
+                </RegisterBtn>
+              </Form.Row>
+            </Form>
+          )}
+        </Formik>
       </FormCard>
     </Wrapper>
   );
