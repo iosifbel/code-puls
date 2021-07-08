@@ -81,16 +81,7 @@ const controller = {
         const decodedToken = jwtDecode(token);
         const expiresAt = decodedToken.exp;
 
-        const { id, nume, prenume, email, grupa, an } = savedUser;
-
-        const userInfo = {
-          id,
-          nume,
-          prenume,
-          email,
-          grupa,
-          an,
-        };
+        const userInfo = savedUser;
 
         return res
           .status(200)
@@ -123,9 +114,12 @@ async function saveUserToDb(table, user) {
     nume: user.lastName,
     prenume: user.firstName,
     parola: user.password,
-    grupa: user.group,
-    an: user.year,
   };
+
+  if (table === "studenti") {
+    savedUser.grupa = user.group;
+    savedUser.an = user.year;
+  }
   return savedUser;
 }
 

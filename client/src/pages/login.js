@@ -128,13 +128,11 @@ function Login() {
                   <option value="teacher">Profesor</option>
                 </Form.Control>
               </Form.Group>
-              <Form.Row className="justify-content-center">
-                {/* <Link to="/" className="loginLink"> */}
+              <Form.Group>
                 <LoginBtn variant="primary" type="submit">
                   <p>Login</p>
                 </LoginBtn>
-                {/* </Link> */}
-              </Form.Row>
+              </Form.Group>
 
               <div class="sau">
                 <p>
@@ -142,11 +140,13 @@ function Login() {
                 </p>
               </div>
 
-              <Form.Row className="justify-content-center">
-                <RegisterBtn variant="secondary" type="submit">
-                  Register
-                </RegisterBtn>
-              </Form.Row>
+              <Form.Group>
+                <Link to="/register" className="registerBtnContainer">
+                  <RegisterBtn variant="secondary" type="submit">
+                    Creează un cont
+                  </RegisterBtn>
+                </Link>
+              </Form.Group>
             </Form>
           )}
         </Formik>
@@ -204,6 +204,9 @@ const LoginBtn = styled(Button)`
   font-weight: bold;
   height: 2em;
   width: 20em;
+  margin-left: 0;
+  margin-right: 0;
+  width: 100%;
   border: none;
 
   &:hover {
@@ -220,6 +223,9 @@ const RegisterBtn = styled(Button)`
   font-weight: bold;
   height: 2em;
   width: 20em;
+  margin-left: 0;
+  margin-right: 0;
+  width: 100%;
   border: 1px solid ${theme.Grey1};
   box-sizing: border-box;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.08);
