@@ -8,9 +8,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import theme from "../Assets/theme";
 import { Formik, useFormik } from "formik";
 import * as yup from "yup";
+import axios from "axios";
+const rootURL = "http://localhost:5000/api";
 
 function Login() {
-  const { setShowNavbar, setShowHeader } = React.useContext(AppContext);
+  const { setShowNavbar, setShowHeader, setAuthenticated, setUser } =
+    React.useContext(AppContext);
   setShowNavbar(false);
   setShowHeader(false);
   const [type, setType] = useState("student");
@@ -30,12 +33,27 @@ function Login() {
     password: yup.string().required("Nicio parolă introdusă"),
   });
 
-  function submitHandler(values) {
-    console.log({
-      email: values.email,
-      password: values.password,
-      type: type,
+  async function login(user) {
+    console.log(user);
+    const response = await axios({
+      method: "post",
+      url: `${rootURL}/auth/login`,
+      data: user,
+    }).catch((err) => {
+      console.log(err.response.data.message);
     });
+    if (response) {
+      if (response.status === 200) {
+        console.log("Authenticated");
+        console.log(response.data);
+      }
+    }
+  }
+
+  function submitHandler(user) {
+    console.log("submitted");
+    user.type = type;
+    login(user);
   }
 
   return (
@@ -52,7 +70,6 @@ function Login() {
           initialValues={{
             email: "",
             password: "",
-            type: type,
           }}
         >
           {({
@@ -101,12 +118,11 @@ function Login() {
                 <Form.Label>Tip cont</Form.Label>
                 <Form.Control
                   as="select"
-                  name="type"
-                  value={type}
-                  onChange={(e) => {
-                    setType(e.target.value);
-                  }}
-                  onBlur={handleBlur}
+                  // name="type"
+                  // value={type}
+                  onChange={(e) => setType(e.target.value)}
+                  // onChange={(e) => setType(e.target.value)}
+                  // onBlur={handleBlur}
                 >
                   <option value="student">Student</option>
                   <option value="teacher">Profesor</option>
@@ -154,7 +170,7 @@ const Wrapper = styled.div`
 
 const FormCard = styled(Card)`
   width: 30em;
-  height 32em;
+  min-height 32em;
 
   .sau {
     margin-top: 2em;

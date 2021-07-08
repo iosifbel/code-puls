@@ -4,8 +4,10 @@ const subject = require("./subject");
 const assignment = require("./assignment");
 const question = require("./question");
 const grade = require("./grade");
+const auth = require("./auth");
 
 const controllers = {
+  auth,
   student,
   teacher,
   subject,
