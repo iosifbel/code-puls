@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { AppContext } from "../context/context";
+import { FormSuccess, FormError } from "../components";
 import { Card, Button } from "../components/defaultComponents";
 import styled from "styled-components";
 import { Form, Col } from "react-bootstrap";
@@ -9,14 +10,19 @@ import theme from "../Assets/theme";
 import { Formik, useFormik } from "formik";
 import * as yup from "yup";
 import axios from "axios";
-const rootURL = "http://localhost:5000/api";
+import { ImSpinner3 } from "react-icons/im";
 
+const rootURL = "http://localhost:5000/api";
 function Login() {
   const { setShowNavbar, setShowHeader, setAuthenticated, setUser } =
     React.useContext(AppContext);
   setShowNavbar(false);
   setShowHeader(false);
   const [type, setType] = useState("student");
+  const [isLoading, setIsLoading] = useState(false);
+  const [redirectOnLogin, setRedirectOnLogin] = useState(false);
+  const [loginSuccess, setLoginSuccess] = useState();
+  const [loginError, setLoginError] = useState();
 
   const schema = yup.object().shape({
     email: yup
@@ -35,19 +41,25 @@ function Login() {
 
   async function login(user) {
     console.log(user);
+    setIsLoading(true);
     const response = await axios({
       method: "post",
       url: `${rootURL}/auth/login`,
       data: user,
     }).catch((err) => {
       console.log(err.response.data.message);
+      setLoginError(err.response.data.message);
+      setLoginSuccess(null);
     });
     if (response) {
-      if (response.status === 200) {
-        console.log("Authenticated");
-        console.log(response.data);
-      }
+      console.log(response.data);
+      setLoginError(null);
+      setLoginSuccess(response.data.message);
     }
+    setTimeout(() => {
+      setRedirectOnLogin(true);
+    }, 1500);
+    setIsLoading(false);
   }
 
   function submitHandler(user) {
@@ -57,101 +69,117 @@ function Login() {
   }
 
   return (
-    <Wrapper>
-      <FormCard>
-        <Formik
-          validationSchema={schema}
-          // onSubmit={(values) => {
-          //   alert(JSON.stringify(values, null, 2));
-          // }}
-          onSubmit={(values) => {
-            submitHandler(values);
-          }}
-          initialValues={{
-            email: "",
-            password: "",
-          }}
-        >
-          {({
-            handleSubmit,
-            handleChange,
-            handleBlur,
-            values,
-            touched,
-            isValid,
-            errors,
-          }) => (
-            <Form noValidate onSubmit={handleSubmit}>
-              <Form.Group controlId="formBasicEmail">
-                <Form.Label>Adresă de email</Form.Label>
-                <Form.Control
-                  name="email"
-                  type="email"
-                  value={values.email}
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  placeholder="Introdu email"
-                  isValid={touched.email && !errors.email}
-                  isInvalid={touched.email && !!errors.email}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.email}
-                </Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group controlId="formBasicPassword">
-                <Form.Label>Parolă</Form.Label>
-                <Form.Control
-                  name="password"
-                  type="password"
-                  value={values.password}
-                  placeholder="Introdu Parola"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  isValid={touched.password && !errors.password}
-                  isInvalid={touched.password && !!errors.password}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.password}
-                </Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group controlId="formBasicCheckbox">
-                <Form.Label>Tip cont</Form.Label>
-                <Form.Control
-                  as="select"
-                  // name="type"
-                  // value={type}
-                  onChange={(e) => setType(e.target.value)}
-                  // onChange={(e) => setType(e.target.value)}
-                  // onBlur={handleBlur}
-                >
-                  <option value="student">Student</option>
-                  <option value="teacher">Profesor</option>
-                </Form.Control>
-              </Form.Group>
-              <Form.Group>
-                <LoginBtn variant="primary" type="submit">
-                  <p>Login</p>
-                </LoginBtn>
-              </Form.Group>
+    <>
+      {redirectOnLogin && <Redirect to="/dashboard" />}
+      <Wrapper>
+        <FormCard>
+          <Formik
+            validationSchema={schema}
+            // onSubmit={(values) => {
+            //   alert(JSON.stringify(values, null, 2));
+            // }}
+            onSubmit={(values) => {
+              submitHandler(values);
+            }}
+            initialValues={{
+              email: "",
+              password: "",
+            }}
+          >
+            {({
+              handleSubmit,
+              handleChange,
+              handleBlur,
+              values,
+              touched,
+              isValid,
+              errors,
+            }) => (
+              <Form noValidate onSubmit={handleSubmit}>
+                <Form.Group>
+                  {loginSuccess && <FormSuccess text={loginSuccess} />}
+                  {loginError && <FormError text={loginError} />}
+                </Form.Group>
 
-              <div class="sau">
-                <p>
-                  <span>sau</span>
-                </p>
-              </div>
+                <Form.Group controlId="formBasicEmail">
+                  <Form.Label>Adresă de email</Form.Label>
+                  <Form.Control
+                    name="email"
+                    type="email"
+                    value={values.email}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="Introdu email"
+                    isValid={touched.email && !errors.email}
+                    isInvalid={touched.email && !!errors.email}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.email}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group controlId="formBasicPassword">
+                  <Form.Label>Parolă</Form.Label>
+                  <Form.Control
+                    name="password"
+                    type="password"
+                    value={values.password}
+                    placeholder="Introdu Parola"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    isValid={touched.password && !errors.password}
+                    isInvalid={touched.password && !!errors.password}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.password}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group controlId="formBasicCheckbox">
+                  <Form.Label>Tip cont</Form.Label>
+                  <Form.Control
+                    as="select"
+                    // name="type"
+                    // value={type}
+                    onChange={(e) => setType(e.target.value)}
+                    // onChange={(e) => setType(e.target.value)}
+                    // onBlur={handleBlur}
+                  >
+                    <option value="student">Student</option>
+                    <option value="teacher">Profesor</option>
+                  </Form.Control>
+                </Form.Group>
+                <Form.Group>
+                  <LoginBtn variant="primary" type="submit">
+                    {isLoading ? (
+                      <span className="loadingContainer">
+                        <ImSpinner3 className="icon-spin"></ImSpinner3>
+                        <span className="loadingText">Se încarcă...</span>
+                      </span>
+                    ) : (
+                      <p>Login</p>
+                    )}
+                    <p>Login</p>
+                  </LoginBtn>
+                </Form.Group>
 
-              <Form.Group>
-                <Link to="/register" className="registerBtnContainer">
-                  <RegisterBtn variant="secondary" type="submit">
-                    Creează un cont
-                  </RegisterBtn>
-                </Link>
-              </Form.Group>
-            </Form>
-          )}
-        </Formik>
-      </FormCard>
-    </Wrapper>
+                <div class="sau">
+                  <p>
+                    <span>sau</span>
+                  </p>
+                </div>
+
+                <Form.Group>
+                  <Link to="/register" className="registerBtnContainer">
+                    <RegisterBtn variant="secondary" type="submit">
+                      <p>Creează un cont</p>
+                    </RegisterBtn>
+                  </Link>
+                </Form.Group>
+              </Form>
+            )}
+          </Formik>
+        </FormCard>
+      </Wrapper>
+    </>
   );
 }
 
@@ -171,6 +199,46 @@ const Wrapper = styled.div`
 const FormCard = styled(Card)`
   width: 30em;
   min-height 32em;
+
+  .loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .loadingText {      
+      font-family: Roboto
+      margin-left: 2em;
+    }
+
+    .icon-spin {
+      margin-right: 0.5em;
+      -webkit-animation: icon-spin 2s infinite linear;
+              animation: icon-spin 2s infinite linear;
+    }
+    
+    @-webkit-keyframes icon-spin {
+      0% {
+        -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+      }
+      100% {
+        -webkit-transform: rotate(359deg);
+                transform: rotate(359deg);
+      }
+    }
+    
+    @keyframes icon-spin {
+      0% {
+        -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+      }
+      100% {
+        -webkit-transform: rotate(359deg);
+                transform: rotate(359deg);
+      }
+    }
+  }
+
+  
 
   .sau {
     margin-top: 2em;

@@ -3,8 +3,9 @@ import React from "react";
 import { AppContext } from "../context/context";
 
 function Dashboard(props) {
-  const { setShowHeader } = React.useContext(AppContext);
+  const { setShowHeader, setShowNavbar } = React.useContext(AppContext);
   setShowHeader(false);
+  setShowNavbar(true);
   return (
     <Wrapper>
       {" "}

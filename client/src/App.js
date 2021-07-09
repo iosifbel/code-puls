@@ -21,7 +21,7 @@ function App() {
         <Header></Header>
         <Navbar type="teacher"></Navbar>
         <Switch>
-          <Route path="/" exact={true}>
+          <Route path="/dashboard" exact={true}>
             <Dashboard type="teacher"></Dashboard>
           </Route>
           <Route path="/tests">

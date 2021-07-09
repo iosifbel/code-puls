@@ -3,7 +3,7 @@ import * as MdIcons from "react-icons/md";
 export const NavbarDataStudent = [
   {
     title: "Panou de lucru",
-    path: "/",
+    path: "/dashboard",
     icon: <MdIcons.MdDashboard />,
   },
   {

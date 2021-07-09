@@ -9,6 +9,8 @@ import theme from "../Assets/theme";
 import { Formik, useFormik } from "formik";
 import * as yup from "yup";
 import axios from "axios";
+import { ImSpinner3 } from "react-icons/im";
+
 const rootURL = "http://localhost:5000/api";
 
 function Register() {
@@ -17,6 +19,7 @@ function Register() {
   setShowNavbar(false);
   setShowHeader(false);
   const [type, setType] = useState("student");
+  const [isLoading, setIsLoading] = useState(false);
 
   const schema = yup.object().shape({
     firstName: yup.string().required("Niciun nume introdus"),
@@ -39,6 +42,7 @@ function Register() {
 
   async function register(user) {
     console.log(user);
+    setIsLoading(true);
     const response = await axios({
       method: "post",
       url: `${rootURL}/auth/register`,
@@ -49,6 +53,7 @@ function Register() {
     if (response) {
       console.log(response.data);
     }
+    setIsLoading(false);
   }
 
   function submitHandler(user) {
@@ -165,7 +170,14 @@ function Register() {
               </Form.Group>
               <Form.Group>
                 <LoginBtn variant="secondary" type="submit">
-                  <p>Creează cont</p>
+                  {isLoading ? (
+                    <span className="loadingContainer">
+                      <ImSpinner3 className="icon-spin"></ImSpinner3>
+                      <span className="loadingText">Se încarcă...</span>
+                    </span>
+                  ) : (
+                    <p>Creează cont</p>
+                  )}
                 </LoginBtn>
               </Form.Group>
 
@@ -200,7 +212,44 @@ const FormCard = styled(Card)`
   width: 30em;
   min-height 32em;
 
- 
+  .loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .loadingText {      
+      font-family: Roboto
+      margin-left: 2em;
+    }
+
+    .icon-spin {
+      margin-right: 0.5em;
+      -webkit-animation: icon-spin 2s infinite linear;
+              animation: icon-spin 2s infinite linear;
+    }
+    
+    @-webkit-keyframes icon-spin {
+      0% {
+        -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+      }
+      100% {
+        -webkit-transform: rotate(359deg);
+                transform: rotate(359deg);
+      }
+    }
+    
+    @keyframes icon-spin {
+      0% {
+        -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+      }
+      100% {
+        -webkit-transform: rotate(359deg);
+                transform: rotate(359deg);
+      }
+    }
+  }
+
 
  .alreadyHaveContainer {
    font-size: 0.9rem;
