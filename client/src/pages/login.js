@@ -1,5 +1,5 @@
 import { Link, Redirect } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/context";
 import { FormSuccess, FormError } from "../components";
 import { Card, Button } from "../components/defaultComponents";
@@ -11,11 +11,14 @@ import { Formik, useFormik } from "formik";
 import * as yup from "yup";
 import axios from "axios";
 import { ImSpinner3 } from "react-icons/im";
+import { AuthContext } from "../context/AuthContext";
 
 const rootURL = "http://localhost:5000/api";
 function Login() {
+  const authContext = useContext(AuthContext);
+
   const { setShowNavbar, setShowHeader, setAuthenticated, setUser } =
-    React.useContext(AppContext);
+    useContext(AppContext);
   setShowNavbar(false);
   setShowHeader(false);
   const [type, setType] = useState("student");
@@ -52,13 +55,15 @@ function Login() {
       setLoginSuccess(null);
     });
     if (response) {
-      console.log(response.data);
+      // console.log(response.data);
+      authContext.setAuthState(response.data);
       setLoginError(null);
       setLoginSuccess(response.data.message);
+      setTimeout(() => {
+        setRedirectOnLogin(true);
+      }, 1500);
     }
-    setTimeout(() => {
-      setRedirectOnLogin(true);
-    }, 1500);
+
     setIsLoading(false);
   }
 

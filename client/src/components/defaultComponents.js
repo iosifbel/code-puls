@@ -10,7 +10,8 @@ export const Button = styled.button`
   padding: 0.25em 2em;
   border: 2px solid
     ${(props) => (props.primary ? theme.mainBlue : theme.mainOrange)};
-  border-radius: 3px;
+  border-radius: 1rem;
+  font-weight: bold;
 
   &:hover {
     background: ${(props) =>

@@ -1,7 +1,9 @@
-import { Link } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import { Link, Redirect } from "react-router-dom";
+import React, { useEffect, useState, useContext } from "react";
 import { AppContext } from "../context/context";
+import { AuthContext } from "../context/AuthContext";
 import { Card, Button } from "../components/defaultComponents";
+import { FormSuccess, FormError } from "../components";
 import styled from "styled-components";
 import { Form, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -14,12 +16,15 @@ import { ImSpinner3 } from "react-icons/im";
 const rootURL = "http://localhost:5000/api";
 
 function Register() {
-  const { setShowNavbar, setShowHeader, setAuthenticated, setUser } =
-    React.useContext(AppContext);
+  const { setShowNavbar, setShowHeader } = useContext(AppContext);
+  const authContext = useContext(AuthContext);
   setShowNavbar(false);
   setShowHeader(false);
   const [type, setType] = useState("student");
   const [isLoading, setIsLoading] = useState(false);
+  const [registerSuccess, setRegisterSuccess] = useState();
+  const [registerError, setRegisterError] = useState();
+  const [redirectOnRegister, setRedirectOnRegister] = useState(false);
 
   const schema = yup.object().shape({
     firstName: yup.string().required("Niciun nume introdus"),
@@ -48,10 +53,18 @@ function Register() {
       url: `${rootURL}/auth/register`,
       data: user,
     }).catch((err) => {
-      console.log(err.response.data.message);
+      // console.log(err.response.data.message);
+      setRegisterError(err.response.data.message);
+      setRegisterSuccess(null);
     });
     if (response) {
-      console.log(response.data);
+      // console.log(response.data);
+      authContext.setAuthState(response.data);
+      setRegisterSuccess(response.data.message);
+      setRegisterError(null);
+      setTimeout(() => {
+        setRedirectOnRegister(true);
+      }, 1500);
     }
     setIsLoading(false);
   }
@@ -63,135 +76,142 @@ function Register() {
   }
 
   return (
-    <Wrapper>
-      <FormCard>
-        <Formik
-          validationSchema={schema}
-          // onSubmit={(values) => {
-          //   alert(JSON.stringify(values, null, 2));
-          // }}
-          onSubmit={(values) => {
-            submitHandler(values);
-          }}
-          initialValues={{
-            firstName: "",
-            lastName: "",
-            email: "",
-            password: "",
-          }}
-        >
-          {({
-            handleSubmit,
-            handleChange,
-            handleBlur,
-            values,
-            touched,
-            isValid,
-            errors,
-          }) => (
-            <Form noValidate onSubmit={handleSubmit}>
-              <Form.Group>
-                <Form.Label>Nume</Form.Label>
-                <Form.Control
-                  name="lastName"
-                  type="lastName"
-                  value={values.lastName}
-                  placeholder="Introdu numele"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  isValid={touched.lastName && !errors.lastName}
-                  isInvalid={touched.lastName && !!errors.lastName}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.lastName}
-                </Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group>
-                <Form.Label>Prenume</Form.Label>
-                <Form.Control
-                  name="firstName"
-                  type="firstName"
-                  value={values.firstName}
-                  placeholder="Introdu prenumele"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  isValid={touched.firstName && !errors.firstName}
-                  isInvalid={touched.firstName && !!errors.firstName}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.firstName}
-                </Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group controlId="formBasicEmail">
-                <Form.Label>Adresă de email</Form.Label>
-                <Form.Control
-                  name="email"
-                  type="email"
-                  value={values.email}
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  placeholder="Introdu email"
-                  isValid={touched.email && !errors.email}
-                  isInvalid={touched.email && !!errors.email}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.email}
-                </Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group controlId="formBasicPassword">
-                <Form.Label>Parolă</Form.Label>
-                <Form.Control
-                  name="password"
-                  type="password"
-                  value={values.password}
-                  placeholder="Introdu Parola"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  isValid={touched.password && !errors.password}
-                  isInvalid={touched.password && !!errors.password}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.password}
-                </Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group controlId="formBasicCheckbox">
-                <Form.Label>Tip cont</Form.Label>
-                <Form.Control
-                  as="select"
-                  // name="type"
-                  // value={type}
-                  onChange={(e) => setType(e.target.value)}
-                  // onChange={(e) => setType(e.target.value)}
-                  // onBlur={handleBlur}
-                >
-                  <option value="student">Student</option>
-                  <option value="teacher">Profesor</option>
-                </Form.Control>
-              </Form.Group>
-              <Form.Group>
-                <LoginBtn variant="secondary" type="submit">
-                  {isLoading ? (
-                    <span className="loadingContainer">
-                      <ImSpinner3 className="icon-spin"></ImSpinner3>
-                      <span className="loadingText">Se încarcă...</span>
-                    </span>
-                  ) : (
-                    <p>Creează cont</p>
-                  )}
-                </LoginBtn>
-              </Form.Group>
+    <>
+      {redirectOnRegister && <Redirect to="/dashboard" />}
+      <Wrapper>
+        <FormCard>
+          <Formik
+            validationSchema={schema}
+            // onSubmit={(values) => {
+            //   alert(JSON.stringify(values, null, 2));
+            // }}
+            onSubmit={(values) => {
+              submitHandler(values);
+            }}
+            initialValues={{
+              firstName: "",
+              lastName: "",
+              email: "",
+              password: "",
+            }}
+          >
+            {({
+              handleSubmit,
+              handleChange,
+              handleBlur,
+              values,
+              touched,
+              isValid,
+              errors,
+            }) => (
+              <Form noValidate onSubmit={handleSubmit}>
+                <Form.Group>
+                  {registerSuccess && <FormSuccess text={registerSuccess} />}
+                  {registerError && <FormError text={registerError} />}
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>Nume</Form.Label>
+                  <Form.Control
+                    name="lastName"
+                    type="lastName"
+                    value={values.lastName}
+                    placeholder="Introdu numele"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    isValid={touched.lastName && !errors.lastName}
+                    isInvalid={touched.lastName && !!errors.lastName}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.lastName}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>Prenume</Form.Label>
+                  <Form.Control
+                    name="firstName"
+                    type="firstName"
+                    value={values.firstName}
+                    placeholder="Introdu prenumele"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    isValid={touched.firstName && !errors.firstName}
+                    isInvalid={touched.firstName && !!errors.firstName}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.firstName}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group controlId="formBasicEmail">
+                  <Form.Label>Adresă de email</Form.Label>
+                  <Form.Control
+                    name="email"
+                    type="email"
+                    value={values.email}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="Introdu email"
+                    isValid={touched.email && !errors.email}
+                    isInvalid={touched.email && !!errors.email}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.email}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group controlId="formBasicPassword">
+                  <Form.Label>Parolă</Form.Label>
+                  <Form.Control
+                    name="password"
+                    type="password"
+                    value={values.password}
+                    placeholder="Introdu Parola"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    isValid={touched.password && !errors.password}
+                    isInvalid={touched.password && !!errors.password}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.password}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group controlId="formBasicCheckbox">
+                  <Form.Label>Tip cont</Form.Label>
+                  <Form.Control
+                    as="select"
+                    // name="type"
+                    // value={type}
+                    onChange={(e) => setType(e.target.value)}
+                    // onChange={(e) => setType(e.target.value)}
+                    // onBlur={handleBlur}
+                  >
+                    <option value="student">Student</option>
+                    <option value="teacher">Profesor</option>
+                  </Form.Control>
+                </Form.Group>
+                <Form.Group>
+                  <LoginBtn variant="secondary" type="submit">
+                    {isLoading ? (
+                      <span className="loadingContainer">
+                        <ImSpinner3 className="icon-spin"></ImSpinner3>
+                        <span className="loadingText">Se încarcă...</span>
+                      </span>
+                    ) : (
+                      <p>Creează cont</p>
+                    )}
+                  </LoginBtn>
+                </Form.Group>
 
-              <Form.Group className="alreadyHaveContainer">
-                <p>Ai deja un cont?</p>
-                <Link to="/login" className="loginText">
-                  Login
-                </Link>
-              </Form.Group>
-            </Form>
-          )}
-        </Formik>
-      </FormCard>
-    </Wrapper>
+                <Form.Group className="alreadyHaveContainer">
+                  <p>Ai deja un cont?</p>
+                  <Link to="/login" className="loginText">
+                    Login
+                  </Link>
+                </Form.Group>
+              </Form>
+            )}
+          </Formik>
+        </FormCard>
+      </Wrapper>
+    </>
   );
 }
 

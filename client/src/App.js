@@ -8,45 +8,65 @@ import {
   Settings,
   History,
   AddTest,
+  Home,
 } from "./pages";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-
+import { Switch, Route, Redirect } from "react-router-dom";
+import { useContext } from "react";
 import Navbar from "./components/Navbar";
 import Header from "./components/Header";
+import { AuthContext } from "./context/AuthContext";
+
+const AuthenticatedRoute = (props) => {
+  const auth = useContext(AuthContext);
+  return (
+    <Route
+      render={() =>
+        auth.isAuthenticated() ? props.children : <Redirect to="/" />
+      }
+    ></Route>
+  );
+};
+
+const UnauthenticatedRoutes = () => (
+  <Switch>
+    <Route path="/login">
+      <Login />
+    </Route>
+    <Route path="/register">
+      <Register />
+    </Route>
+    <Route exact path="/">
+      <Home />
+    </Route>
+    <Route path="*">
+      <Error />
+    </Route>
+  </Switch>
+);
 
 function App() {
   return (
     <div>
-      <Router>
-        <Header></Header>
-        <Navbar type="teacher"></Navbar>
-        <Switch>
-          <Route path="/dashboard" exact={true}>
-            <Dashboard type="teacher"></Dashboard>
-          </Route>
-          <Route path="/tests">
-            <Tests></Tests>
-          </Route>
-          <Route path="/history">
-            <History></History>
-          </Route>
-          <Route path="/addTest">
-            <AddTest></AddTest>
-          </Route>
-          <Route path="/settings">
-            <Settings></Settings>
-          </Route>
-          <Route path="/login">
-            <Login></Login>
-          </Route>
-          <Route path="/register">
-            <Register></Register>
-          </Route>
-          <Route path="*">
-            <Error></Error>
-          </Route>
-        </Switch>
-      </Router>
+      <Header></Header>
+      <Navbar type="teacher"></Navbar>
+      <Switch>
+        <AuthenticatedRoute path="/dashboard">
+          <Dashboard type="teacher"></Dashboard>
+        </AuthenticatedRoute>
+        <AuthenticatedRoute path="/tests">
+          <Tests></Tests>
+        </AuthenticatedRoute>
+        <AuthenticatedRoute path="/history">
+          <History></History>
+        </AuthenticatedRoute>
+        <AuthenticatedRoute path="/addTest">
+          <AddTest></AddTest>
+        </AuthenticatedRoute>
+        <AuthenticatedRoute path="/settings">
+          <Settings></Settings>
+        </AuthenticatedRoute>
+        <UnauthenticatedRoutes />
+      </Switch>
     </div>
   );
 }

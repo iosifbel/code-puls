@@ -4,9 +4,10 @@ import { MdMenu } from "react-icons/md";
 import { Nav } from "react-bootstrap";
 import styled from "styled-components";
 import logo from "../Assets/logo.svg";
-import { useHistory } from "react-router-dom";
+import { useHistory, withRouter } from "react-router-dom";
 import React from "react";
 import { AppContext } from "../context/context";
+import AvatarDropdown from "./AvatarDropdown";
 
 function Header() {
   const { showHeader } = React.useContext(AppContext);
@@ -14,52 +15,27 @@ function Header() {
   function goBack() {
     history.goBack();
   }
-  console.log(showHeader);
+
   return !showHeader ? null : (
-    <div>
-      <DefaultNavbar>
-        <Wrapper>
-          <StyledArrow onClick={goBack}>
-            <FaArrowLeft></FaArrowLeft>
-          </StyledArrow>
-          <StyledBrand href="/">
-            <img alt="" src={logo} width="30" height="30" />
-            CodPuls
-          </StyledBrand>
-          <StyledButtonsDiv>
-            {" "}
-            <Nav.Link href="/">
-              <FaRegUserCircle></FaRegUserCircle>
-            </Nav.Link>
-            <Nav.Link href="/">
-              <MdMenu href="/"></MdMenu>
-            </Nav.Link>
-          </StyledButtonsDiv>
-        </Wrapper>
-      </DefaultNavbar>
-    </div>
+    <Wrapper>
+      <nav>
+        <div>
+          <AvatarDropdown></AvatarDropdown>
+        </div>
+      </nav>
+    </Wrapper>
   );
 }
 
-const Wrapper = styled.section`
-  display: grid;
-  width: 100%;
-  grid-template-areas: "A    B   B   C";
-  z-index: 100;
-`;
-
-const StyledArrow = styled(Nav.Link)`
-  grid-area: A;
-`;
-
-const StyledBrand = styled(Nav.Link)`
-  grid-area: B;
-`;
-
-const StyledButtonsDiv = styled.div`
-  grid-area: C;
+const Wrapper = styled.div`
   display: flex;
-  flex-direction: row;
+  // justify-content: end;
+
+  nav {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+  }
 `;
 
-export default Header;
+export default withRouter(Header);

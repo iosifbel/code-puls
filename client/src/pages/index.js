@@ -7,5 +7,17 @@ import History from "./history";
 import Settings from "./settings";
 import TakeTest from "./takeTest";
 import AddTest from "./addTest";
+import Home from "./home";
 
-export { Login, Register, Dashboard, Error, Tests, History, Settings, TakeTest, AddTest};
+export {
+  Login,
+  Register,
+  Dashboard,
+  Error,
+  Tests,
+  History,
+  Settings,
+  TakeTest,
+  AddTest,
+  Home,
+};
