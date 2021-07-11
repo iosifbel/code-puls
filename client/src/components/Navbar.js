@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { NavbarDataStudent } from "./NavbarDataStudent";
 import { NavbarDataTeacher } from "./NavbarDataTeacher";
 import { Link } from "react-router-dom";
@@ -8,10 +8,11 @@ import theme from "../Assets/theme";
 import { AppContext } from "../context/context";
 import { useState } from "react";
 import logo from "../Assets/logo.svg";
+import { AuthContext } from "../context/AuthContext";
 
 function Navbar(props) {
-  let NavbarData =
-    props.type === "student" ? NavbarDataStudent : NavbarDataTeacher;
+  const auth = useContext(AuthContext);
+  let NavbarData = auth.isStudent() ? NavbarDataStudent : NavbarDataTeacher;
   const { showNavbar } = React.useContext(AppContext);
   const [active, setActive] = useState();
   const activeStyle = { color: theme.mainBlue };

@@ -50,6 +50,14 @@ const AuthProvider = ({ children }) => {
     return new Date().getTime() / 1000 < authState.expiresAt;
   };
 
+  const isStudent = () => {
+    return authState.userInfo.tip === "student";
+  };
+
+  const isTeacher = () => {
+    return authState.userInfo.tip === "profesor";
+  };
+
   return (
     <Provider
       value={{
@@ -57,6 +65,8 @@ const AuthProvider = ({ children }) => {
         setAuthState: (authInfo) => setAuthInfo(authInfo),
         logout,
         isAuthenticated,
+        isStudent,
+        isTeacher,
       }}
     >
       {children}

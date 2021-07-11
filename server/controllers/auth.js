@@ -30,6 +30,7 @@ const controller = {
       if (passwordValid) {
         const { parola, ...rest } = user;
         const userInfo = Object.assign({}, { ...rest });
+        userInfo.tip = type === "student" ? "student" : "profesor";
 
         const token = createToken(userInfo);
 
@@ -82,6 +83,7 @@ const controller = {
         const expiresAt = decodedToken.exp;
 
         const userInfo = savedUser;
+        userInfo.tip = type === "student" ? "student" : "profesor";
 
         return res
           .status(200)

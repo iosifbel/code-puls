@@ -3,8 +3,6 @@ const router = express.Router();
 
 const studentController = require("../controllers").student;
 
-router.post("/signup", studentController.signup);
-router.post("/login", studentController.login);
 router.get("/:student_id", studentController.getById);
 router.get("/group/:student_group", studentController.getByGroup);
 router.get("/year/:student_year", studentController.getByYear);

@@ -60,6 +60,7 @@ const controller = {
                 const id_test = result[0]["LAST_INSERT_ID()"];
 
                 const questions = req.body.questions;
+
                 for (let i = 0; i < questions.length; i++) {
                   connection.query(
                     mysql.format(
@@ -120,6 +121,47 @@ const controller = {
         }
       }
     );
+  },
+  addTest2: async (req, res) => {
+    const { title, deadline, subjectId, languageId, questions, group } =
+      req.body;
+    console.log(deadline);
+    try {
+      const insertTestsQuery =
+        "INSERT INTO `teste` (`id`, `titlu`, `deadline`, `id_materie`, `id_limbaj_programare`) VALUES (NULL, ?, ?, ?, ?);";
+      let [rows] = await connection
+        .promise()
+        .query(insertTestsQuery, [title, deadline, subjectId, languageId]);
+      const testId = rows.insertId;
+      console.log(rows);
+
+      for (let i = 0; i < questions.length; i++) {
+        const { questionBody, expectedAnswer } = questions[i];
+        const insertQuestionsQuery =
+          "INSERT INTO `intrebari` (`id`, `descriere`, `raspunsuri`) VALUES (NULL, ?, ?)";
+        [rows] = await connection
+          .promise()
+          .query(insertQuestionsQuery, [questionBody, expectedAnswer]);
+        const questionId = rows.insertId;
+
+        const insertTestQuestionQuery =
+          "INSERT INTO `teste_intrebari` (id_test, id_intrebare) VALUES (?, ?);";
+        [rows] = await connection
+          .promise()
+          .query(insertTestQuestionQuery, [testId, questionId]);
+      }
+
+      const insertTestToStudentQuery =
+        "INSERT INTO note (id_student, id_test) SELECT s.ID, t.ID FROM studenti s, teste t WHERE t.id=? AND s.grupa=?";
+      [rows] = await connection
+        .promise()
+        .query(insertTestToStudentQuery, [testId, group]);
+
+      res.status(200).json({ message: "Testul a fost adaugat cu succes" });
+    } catch (error) {
+      res.status(500).json({ message: "Eroare la server" });
+      console.log(error.message);
+    }
   },
   updateTest: async (req, res) => {
     connection.query(

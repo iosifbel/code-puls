@@ -23,7 +23,7 @@ const ace = [
 const AppContext = React.createContext();
 const AppProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [tests, setTests] = useState([]);
+  // const [tests, setTests] = useState([]);
   const [showNavbar, setShowNavbar] = useState(false);
   const [showHeader, setShowHeader] = useState(false);
   const [testQuestions, setTestQuestions] = useState([
@@ -33,18 +33,18 @@ const AppProvider = ({ children }) => {
   // const [judgeResponse, setJudgeResponse] = useState();
   const [codeEditorText, setCodeEditorText] = useState("#include<iostream>");
 
-  const getStudentTests = async () => {
-    console.log("getting tests from db..");
-    setIsLoading(true);
-    const response = await axios
-      .get(`${rootURL}/students/1/due`)
-      .catch((err) => console.log(err));
+  // const getStudentTests = async () => {
+  //   console.log("getting tests from db..");
+  //   setIsLoading(true);
+  //   const response = await axios
+  //     .get(`${rootURL}/students/1/due`)
+  //     .catch((err) => console.log(err));
 
-    if (response) {
-      setTests(response.data);
-    }
-    setIsLoading(false);
-  };
+  //   if (response) {
+  //     setTests(response.data);
+  //   }
+  //   setIsLoading(false);
+  // };
   const getTestQuestions = async (testId) => {
     console.log("getting questions from db..");
     setIsLoading(true);
@@ -53,7 +53,7 @@ const AppProvider = ({ children }) => {
       .catch((err) => console.log(err));
 
     if (response) {
-      // console.log(response.data)
+      console.log(response.data);
       setTestQuestions(response.data);
     }
     setIsLoading(false);
@@ -95,9 +95,9 @@ const AppProvider = ({ children }) => {
   return (
     <AppContext.Provider
       value={{
-        tests,
+        // tests,
         isLoading,
-        getStudentTests,
+        // getStudentTests,
         showNavbar,
         setShowNavbar,
         testQuestions,

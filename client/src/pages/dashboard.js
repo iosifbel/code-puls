@@ -1,8 +1,11 @@
 import styled from "styled-components";
-import React from "react";
+import React, { useContext } from "react";
 import { AppContext } from "../context/context";
+import { AuthContext } from "../context/AuthContext";
 
 function Dashboard(props) {
+  const auth = useContext(AuthContext);
+  const { authState } = auth;
   const { setShowHeader, setShowNavbar } = React.useContext(AppContext);
   setShowHeader(true);
   setShowNavbar(true);
@@ -11,7 +14,7 @@ function Dashboard(props) {
       {" "}
       <div>
         <h1>Panou de lucru</h1>
-        <h2>{props.type ? props.type : "none"}</h2>
+        <h2>{authState.userInfo ? authState.userInfo.tip : "none"}</h2>
       </div>
     </Wrapper>
   );

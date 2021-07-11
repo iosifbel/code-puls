@@ -31,7 +31,9 @@ function TakeTest({ test }) {
   const [isConsoleLoading, setIsConsoleLoading] = useState(false);
 
   useEffect(() => {
+    console.log(test.id);
     getTestQuestions(test.id);
+    console.log(testQuestions);
     const aceLanguage = aceLanguages.find(
       (language) => language.id == test.id_limbaj_programare
     );
@@ -105,10 +107,10 @@ function TakeTest({ test }) {
     <div>
       <Wrapper>
         <ProblemCard>
-          {/* {testQuestions.map((question) => (
+          {testQuestions.map((question) => (
             <h3>{question.descriere}</h3>
-          ))} */}
-          <h3>{testQuestions[0].descriere}</h3>
+          ))}
+          {/* <h3>{testQuestions[0].descriere}</h3> */}
         </ProblemCard>
         <EditorCard>
           <CodeEditor language={language}></CodeEditor>

@@ -27,6 +27,36 @@ const AuthenticatedRoute = (props) => {
   );
 };
 
+const StudentRoute = (props) => {
+  const auth = useContext(AuthContext);
+  return (
+    <Route
+      render={() =>
+        auth.isAuthenticated() && auth.isStudent() ? (
+          props.children
+        ) : (
+          <Redirect to="/" />
+        )
+      }
+    ></Route>
+  );
+};
+
+const TeacherRoute = (props) => {
+  const auth = useContext(AuthContext);
+  return (
+    <Route
+      render={() =>
+        auth.isAuthenticated() && auth.isTeacher() ? (
+          props.children
+        ) : (
+          <Redirect to="/" />
+        )
+      }
+    ></Route>
+  );
+};
+
 const UnauthenticatedRoutes = () => (
   <Switch>
     <Route path="/login">
@@ -59,9 +89,9 @@ function App() {
         <AuthenticatedRoute path="/history">
           <History></History>
         </AuthenticatedRoute>
-        <AuthenticatedRoute path="/addTest">
+        <TeacherRoute path="/addTest">
           <AddTest></AddTest>
-        </AuthenticatedRoute>
+        </TeacherRoute>
         <AuthenticatedRoute path="/settings">
           <Settings></Settings>
         </AuthenticatedRoute>

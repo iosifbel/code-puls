@@ -81,23 +81,6 @@ const controller = {
       }
     );
   },
-  login: async (req, res) => {
-    const query = "SELECT * FROM profesori WHERE email=? AND parola=?";
-    connection.query(
-      mysql.format(query, [req.body.email, req.body.password]),
-      (err, results) => {
-        if (!err) {
-          if (results.length > 0) {
-            res.status(200).send("User Authenticated");
-          } else {
-            res.status(401).send("No user with this credentials found");
-          }
-        } else {
-          res.status(500).send("Server error");
-        }
-      }
-    );
-  },
 };
 
 module.exports = controller;

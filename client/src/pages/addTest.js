@@ -1,7 +1,9 @@
 import styled from "styled-components";
 import { Form, Col } from "react-bootstrap";
+import { FormSuccess, FormError } from "../components";
 import { AppContext } from "../context/context";
-import React, { useState, useEffect } from "react";
+import { AuthContext } from "../context/AuthContext";
+import React, { useState, useEffect, useContext } from "react";
 import { Button, Card } from "../components/defaultComponents";
 import theme from "../Assets/theme";
 import { Loader } from "../components";
@@ -10,13 +12,24 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { MdAddCircleOutline, MdRemoveCircleOutline } from "react-icons/md";
+import { ImSpinner3 } from "react-icons/im";
 
 const rootURL = "http://localhost:5000/api";
 
 function AddTest() {
-  const { judge0Languges, isLoading, setIsLoading, setShowHeader } =
-    React.useContext(AppContext);
-  setShowHeader(false);
+  const auth = useContext(AuthContext);
+  const { authState } = auth;
+  const user = authState.userInfo;
+
+  const { judge0Languges, setShowHeader } = React.useContext(AppContext);
+  setShowHeader(true);
+
+  //set success error messages
+  const [formSuccess, setFormSuccess] = useState();
+  const [formError, setFormError] = useState();
+
+  //set static components on load
+  const [isLoading, setIsLoading] = useState(true);
   const [subjects, setSubjects] = useState([]);
   const [groups, setGroups] = useState();
   const [areGroupsLoading, setAreGroupsLoading] = useState(true);
@@ -36,7 +49,7 @@ function AddTest() {
 
   //onMount
   useEffect(() => {
-    getSubjects();
+    getSubjects(user);
   }, []);
 
   function subjectChanged(id) {
@@ -61,12 +74,12 @@ function AddTest() {
     setAreGroupsLoading(false);
   }
 
-  async function getSubjects() {
+  async function getSubjects(user) {
     console.log("getting subjects from db...");
     setIsLoading(true);
     const response = await axios({
       method: "get",
-      url: `${rootURL}/teachers/1/subjects`,
+      url: `${rootURL}/teachers/${user.id}/subjects`,
     }).catch((err) => console.log(err));
 
     if (response) {
@@ -160,22 +173,33 @@ function AddTest() {
       method: "post",
       url: `${rootURL}/assignments/create`,
       data: test,
-    }).catch((err) => console.log(err));
+    }).catch((err) => {
+      console.log(err.response.data.message);
+      setFormError(err.response.data.message);
+      setTimeout(() => {
+        setFormError(null);
+      }, 3000);
+      setFormSuccess(null);
+    });
 
     if (response) {
       console.log(response.data);
+      setFormError(null);
+      setFormSuccess(response.data.message);
+      setTimeout(() => {
+        setFormSuccess(null);
+      }, 5000);
     }
     setIsLoading(false);
-  }
-
-  if (isLoading) {
-    console.log("is loading..");
-    return <Loader></Loader>;
   }
 
   return (
     <Wrapper>
       <FormTitle className="formTitle">Adaugă Test</FormTitle>
+      <Form.Group>
+        {formSuccess && <FormSuccess text={formSuccess} />}
+        {formError && <FormError text={formError} />}
+      </Form.Group>
       <Form className="addTestForm">
         <Form.Row>
           <Form.Group as={Col} controlId="testTitle">
@@ -284,7 +308,15 @@ function AddTest() {
 
         <Form.Row className="justify-content-center">
           <SendBtn primary onClick={(e) => handleSubmit(e)}>
-            Trimite
+            {isLoading ? (
+              <span className="loadingContainer">
+                <ImSpinner3 className="icon-spin"></ImSpinner3>
+                <span className="loadingText">Se încarcă...</span>
+              </span>
+            ) : (
+              <p>Trimite</p>
+            )}
+            {/* <p>Trimite</p> */}
           </SendBtn>
         </Form.Row>
       </Form>
@@ -300,19 +332,64 @@ const ExampleCustomInput = React.forwardRef(({ value, onClick }, ref) => (
 ));
 
 const SendBtn = styled(Button)`
+background: ${theme.mainBlue};
+color: white;
+margin-top: 2em;
+font-size: 1rem;
+font-weight: bold;
+height: 2em;
+width: 20em;
+margin-left: 0;
+margin-right: 0;
+width: 100%;
+border: none;
+
+&:hover {
   background: ${theme.mainBlue};
   color: white;
-  margin-top: 2em;
-  font-size: 1rem;
-  font-weight: 400;
-  height: 50px;
-  width: 150px;
+}
+  .loadingContainer {
+    display: flex;
+    
+    justify-content: center;
+    align-items: center;
+    .loadingText {      
+      font-family: Roboto
+      margin-left: 2em;
+    }
 
-  &:hover {
-    background: ${theme.mainBlue};
-    color: white;
-    font-weight: normal;
-    f
+    .icon-spin {
+      margin-right: 0.5em;
+      -webkit-animation: icon-spin 2s infinite linear;
+              animation: icon-spin 2s infinite linear;
+    }
+    
+    @-webkit-keyframes icon-spin {
+      0% {
+        -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+      }
+      100% {
+        -webkit-transform: rotate(359deg);
+                transform: rotate(359deg);
+      }
+    }
+    
+    @keyframes icon-spin {
+      0% {
+        -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+      }
+      100% {
+        -webkit-transform: rotate(359deg);
+                transform: rotate(359deg);
+      }
+    }
+  }
+
+  }
+  p {
+    margin-bottom: 0;
   }
 `;
 
