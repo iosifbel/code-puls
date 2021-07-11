@@ -29,6 +29,7 @@ function TakeTest({ test }) {
   const [testCaseStatus, setTestCaseStatus] = useState(" ");
   const [judgeResponse, setJudgeResponse] = useState();
   const [isConsoleLoading, setIsConsoleLoading] = useState(false);
+  const [currentQuestion, setCurrentQuestion] = useState(testQuestions[0]);
 
   useEffect(() => {
     console.log(test.id);
@@ -63,7 +64,7 @@ function TakeTest({ test }) {
       console.log("buton executa apasat");
       const assignment = {
         id: test.id,
-        questionId: testQuestions[0].id,
+        questionId: currentQuestion.id,
         source_cod: encode(codeEditorText),
         language_id: test.id_limbaj_programare,
         stdin: "",
@@ -99,6 +100,10 @@ function TakeTest({ test }) {
     setIsConsoleLoading(false);
   };
 
+  useEffect(() => {
+    console.log(currentQuestion);
+  }, [currentQuestion]);
+
   if (isLoading) {
     return <Loader></Loader>;
   }
@@ -107,7 +112,10 @@ function TakeTest({ test }) {
     <div>
       <Wrapper>
         <ProblemCard>
-          <QuestionSlider questions={testQuestions}></QuestionSlider>
+          <QuestionSlider
+            questions={testQuestions}
+            callback={setCurrentQuestion}
+          ></QuestionSlider>
           {/* {testQuestions.map((question) => (
             <h3>{question.descriere}</h3>
           ))}

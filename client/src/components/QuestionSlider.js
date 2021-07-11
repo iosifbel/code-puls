@@ -17,6 +17,7 @@ const QuestionSlider = (props) => {
 
     setIndex(newIndex);
     setQuestion(currentQuestion);
+    props.callback(currentQuestion);
   }
 
   return (
