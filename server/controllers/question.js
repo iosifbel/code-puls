@@ -105,6 +105,41 @@ const controller = {
       saveToDb(judgeResponse);
     });
   },
+  assessQuestion2: async (req, res) => {
+    try {
+      // console.log(req.params);
+      const { question_id, student_id, test_id } = req.params;
+      const question = req.body;
+
+      const getExpectedAnswer = await axios.get(
+        `${rootURL}questions/${question_id}}`
+      );
+      const expectedAnswer = getExpectedAnswer.data[0].raspunsuri;
+
+      question.expected_output = encode(expectedAnswer);
+      // console.log(question);
+
+      const postSubmission = await axios({
+        method: "post",
+        headers: judgeHeaders,
+        url: judgeURL + judgeURLDefaultParams,
+        data: JSON.stringify(question),
+      });
+      const token = postSubmission.data.token;
+
+      const getJudgeResponse = await axios({
+        method: "get",
+        headers: judgeHeaders,
+        url: judgeURL + token + judgeURLDefaultParams,
+      });
+      const judgeResponse = getJudgeResponse.data;
+
+      res.status(200).send(judgeResponse);
+    } catch (error) {
+      res.status(500).json({ message: "Eroare la server" });
+      console.log(error);
+    }
+  },
 };
 
 module.exports = controller;

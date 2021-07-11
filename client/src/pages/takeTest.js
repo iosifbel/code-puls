@@ -1,16 +1,22 @@
 import { Card, Button } from "../components/defaultComponents";
 import { CodeEditor, Loader, QuestionSlider } from "../components";
 import styled from "styled-components";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 import { AppContext } from "../context/context";
 import DefaultCode from "../components/defaultCodeData";
 import axios from "axios";
 const rootURL = "http://localhost:5000/api";
 
 function TakeTest({ test }) {
-  const { setShowNavbar, setShowHeader } = React.useContext(AppContext);
+  const { setShowNavbar, setShowHeader } = useContext(AppContext);
   setShowNavbar(false);
   setShowHeader(true);
+
+  //get current User
+  const auth = useContext(AuthContext);
+  const { authState } = auth;
+  const user = authState.userInfo;
 
   const {
     testQuestions,
@@ -31,10 +37,12 @@ function TakeTest({ test }) {
   const [isConsoleLoading, setIsConsoleLoading] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(testQuestions[0]);
 
+  //onMount
   useEffect(() => {
-    console.log(test.id);
+    // console.log("onMount");
+    // console.log(test.id);
     getTestQuestions(test.id);
-    console.log(testQuestions);
+    // console.log(testQuestions);
     const aceLanguage = aceLanguages.find(
       (language) => language.id == test.id_limbaj_programare
     );
@@ -47,9 +55,9 @@ function TakeTest({ test }) {
     if (defaultCode) {
       setCodeEditorText(defaultCode.code);
     }
-    console.log("onMount");
   }, []);
 
+  //When judgeResponse change
   useEffect(() => {
     console.log("judge response changed");
     if (judgeResponse) {
@@ -74,10 +82,6 @@ function TakeTest({ test }) {
     }
   }
 
-  function getCodeEditorTextCallback(text) {
-    // setCodeEditorText(text);
-  }
-
   const getJudgeAssessment = async (test) => {
     console.log("getting assessment from judge...");
     setIsConsoleLoading(true);
@@ -86,10 +90,10 @@ function TakeTest({ test }) {
       language_id: test.language_id,
       stdin: test.stdin,
     };
-    console.log(test.source_cod);
+    // console.log(test.source_cod);
     const response = await axios({
       method: "post",
-      url: `${rootURL}/questions/assess/${test.questionId}/${test.id}/1`,
+      url: `${rootURL}/questions/assess/${test.questionId}/${test.id}/${user.id}`,
       data: judgeData,
     }).catch((err) => console.log(err));
 
