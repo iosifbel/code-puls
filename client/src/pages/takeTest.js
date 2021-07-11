@@ -1,5 +1,5 @@
 import { Card, Button } from "../components/defaultComponents";
-import { CodeEditor, Loader } from "../components";
+import { CodeEditor, Loader, QuestionSlider } from "../components";
 import styled from "styled-components";
 import React, { useEffect, useState } from "react";
 import { AppContext } from "../context/context";
@@ -107,10 +107,11 @@ function TakeTest({ test }) {
     <div>
       <Wrapper>
         <ProblemCard>
-          {testQuestions.map((question) => (
+          <QuestionSlider questions={testQuestions}></QuestionSlider>
+          {/* {testQuestions.map((question) => (
             <h3>{question.descriere}</h3>
           ))}
-          {/* <h3>{testQuestions[0].descriere}</h3> */}
+          <h3>{testQuestions[0].descriere}</h3> */}
         </ProblemCard>
         <EditorCard>
           <CodeEditor language={language}></CodeEditor>
