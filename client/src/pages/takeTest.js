@@ -34,7 +34,7 @@ function TakeTest({ test }) {
   const [judgeResponse, setJudgeResponse] = useState();
   const [isConsoleLoading, setIsConsoleLoading] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [currentQuestion, setCurrentQuestion] = useState({ id: -1 });
+  const [currentQuestion, setCurrentQuestion] = useState();
   const [codeEditorText, setCodeEditorText] = useState([]);
   const [currentCodeEditorText, setCurrentCodeEditorText] = useState();
   //onMount
@@ -50,6 +50,10 @@ function TakeTest({ test }) {
       setLanguage(aceLanguage.name);
     }
   }, []);
+
+  useEffect(() => {
+    setCurrentQuestion(testQuestions[0]);
+  }, [testQuestions]);
 
   //Initialize codeEditor with default code
   useEffect(() => {
@@ -77,19 +81,24 @@ function TakeTest({ test }) {
     }
   }, [judgeResponse]);
 
-  function executaBtnHandler() {
-    if (!isConsoleLoading) {
-      console.log("buton executa apasat");
-      const assignment = {
-        id: test.id,
-        questionId: currentQuestion.id,
-        source_cod: encode(codeEditorText),
-        language_id: test.id_limbaj_programare,
-        stdin: "",
-      };
-      console.log(assignment);
-      getJudgeAssessment(assignment);
+  function questionChanged(question, index) {
+    console.log(testQuestions);
+    console.log(question);
+    setCurrentQuestionIndex(index);
+    setCurrentQuestion(question);
+  }
+  function codeEditorTextChanged(text) {
+    console.log(text);
+
+    let temp_state = [...codeEditorText];
+
+    if (codeEditorText.length > currentQuestionIndex) {
+      temp_state[currentQuestionIndex] = text;
+    } else {
+      temp_state.push(text);
     }
+    setCodeEditorText(temp_state);
+    setCurrentCodeEditorText(text);
   }
 
   const getJudgeAssessment = async (test) => {
@@ -113,30 +122,24 @@ function TakeTest({ test }) {
     }
     setIsConsoleLoading(false);
   };
-  function questionChanged(question, index) {
-    console.log(testQuestions);
-    console.log(question);
-    setCurrentQuestionIndex(index);
-    setCurrentQuestion(question);
-  }
-
-  function codeEditorTextChanged(text) {
-    console.log(text);
-
-    let temp_state = [...codeEditorText];
-
-    if (codeEditorText.length > currentQuestionIndex) {
-      temp_state[currentQuestionIndex] = text;
-    } else {
-      temp_state.push(text);
+  function executaBtnHandler() {
+    if (!isConsoleLoading) {
+      console.log("buton executa apasat");
+      const assignment = {
+        id: test.id,
+        questionId: currentQuestion.id,
+        source_cod: encode(codeEditorText[currentQuestionIndex]),
+        language_id: test.id_limbaj_programare,
+        stdin: "",
+      };
+      console.log(assignment);
+      getJudgeAssessment(assignment);
     }
-    setCodeEditorText(temp_state);
-    setCurrentCodeEditorText(text);
   }
 
-  useEffect(() => {
-    console.log(codeEditorText);
-  }, [codeEditorText]);
+  // useEffect(() => {
+  //   console.log(codeEditorText);
+  // }, [codeEditorText]);
 
   if (isLoading) {
     return <Loader></Loader>;
