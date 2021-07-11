@@ -23,8 +23,6 @@ function TakeTest({ test }) {
     getTestQuestions,
     isLoading,
     aceLanguages,
-    codeEditorText,
-    setCodeEditorText,
     encode,
     decode,
   } = React.useContext(AppContext);
@@ -35,8 +33,10 @@ function TakeTest({ test }) {
   const [testCaseStatus, setTestCaseStatus] = useState(" ");
   const [judgeResponse, setJudgeResponse] = useState();
   const [isConsoleLoading, setIsConsoleLoading] = useState(false);
-  const [currentQuestion, setCurrentQuestion] = useState(testQuestions[0]);
-
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [currentQuestion, setCurrentQuestion] = useState({ id: -1 });
+  const [codeEditorText, setCodeEditorText] = useState([]);
+  const [currentCodeEditorText, setCurrentCodeEditorText] = useState();
   //onMount
   useEffect(() => {
     // console.log("onMount");
@@ -49,13 +49,23 @@ function TakeTest({ test }) {
     if (aceLanguage) {
       setLanguage(aceLanguage.name);
     }
-    const defaultCode = DefaultCode.find(
-      (item) => item.id == test.id_limbaj_programare
-    );
-    if (defaultCode) {
-      setCodeEditorText(defaultCode.code);
-    }
   }, []);
+
+  //Initialize codeEditor with default code
+  useEffect(() => {
+    if (testQuestions) {
+      const defaultCode = DefaultCode.find(
+        (item) => item.id == test.id_limbaj_programare
+      );
+      if (defaultCode) {
+        let array = [];
+        testQuestions.map((element) => {
+          array.push(defaultCode.code);
+        });
+        setCodeEditorText(array);
+      }
+    }
+  }, [testQuestions]);
 
   //When judgeResponse change
   useEffect(() => {
@@ -103,10 +113,30 @@ function TakeTest({ test }) {
     }
     setIsConsoleLoading(false);
   };
+  function questionChanged(question, index) {
+    console.log(testQuestions);
+    console.log(question);
+    setCurrentQuestionIndex(index);
+    setCurrentQuestion(question);
+  }
+
+  function codeEditorTextChanged(text) {
+    console.log(text);
+
+    let temp_state = [...codeEditorText];
+
+    if (codeEditorText.length > currentQuestionIndex) {
+      temp_state[currentQuestionIndex] = text;
+    } else {
+      temp_state.push(text);
+    }
+    setCodeEditorText(temp_state);
+    setCurrentCodeEditorText(text);
+  }
 
   useEffect(() => {
-    console.log(currentQuestion);
-  }, [currentQuestion]);
+    console.log(codeEditorText);
+  }, [codeEditorText]);
 
   if (isLoading) {
     return <Loader></Loader>;
@@ -118,7 +148,7 @@ function TakeTest({ test }) {
         <ProblemCard>
           <QuestionSlider
             questions={testQuestions}
-            callback={setCurrentQuestion}
+            callback={questionChanged}
           ></QuestionSlider>
           {/* {testQuestions.map((question) => (
             <h3>{question.descriere}</h3>
@@ -126,7 +156,12 @@ function TakeTest({ test }) {
           <h3>{testQuestions[0].descriere}</h3> */}
         </ProblemCard>
         <EditorCard>
-          <CodeEditor language={language}></CodeEditor>
+          <CodeEditor
+            language={language}
+            value={codeEditorText[currentQuestionIndex]}
+            defaultCode={currentCodeEditorText}
+            callback={codeEditorTextChanged}
+          ></CodeEditor>
         </EditorCard>
         <ExecuteBtn primary onClick={executaBtnHandler}>
           Executa

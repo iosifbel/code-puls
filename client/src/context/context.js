@@ -31,7 +31,7 @@ const AppProvider = ({ children }) => {
   ]);
   const [aceLanguages] = useState(ace);
   // const [judgeResponse, setJudgeResponse] = useState();
-  const [codeEditorText, setCodeEditorText] = useState("#include<iostream>");
+  const [codeEditorText, setCodeEditorText] = useState();
 
   // const getStudentTests = async () => {
   //   console.log("getting tests from db..");

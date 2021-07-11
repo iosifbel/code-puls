@@ -11,13 +11,13 @@ const QuestionSlider = (props) => {
     let newIndex = 1;
     try {
       newIndex = parseInt(e.target.id) + 1;
+
+      setIndex(newIndex);
+      setQuestion(currentQuestion);
+      props.callback(currentQuestion, parseInt(e.target.id));
     } catch (error) {
       console.log(error);
     }
-
-    setIndex(newIndex);
-    setQuestion(currentQuestion);
-    props.callback(currentQuestion);
   }
 
   return (
