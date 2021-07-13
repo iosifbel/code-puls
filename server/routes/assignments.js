@@ -10,6 +10,7 @@ router.post(
   "/assign/:test_id/:group_id",
   assignmentController.assignTestToGroup
 );
+router.post("/sendSubmission/:user_id/:test_id", assignmentController.sendTest);
 router.put("/update/:test_id", assignmentController.updateTest);
 router.delete("/unassign/:test_id", assignmentController.unassignTest);
 router.delete("/delete/:test_id", assignmentController.deleteTest);

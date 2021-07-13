@@ -1,5 +1,18 @@
 const connection = require("../config/db");
+const { promisify } = require("util");
+const setTimeoutAsync = promisify(setTimeout);
 const mysql = require("mysql2");
+const axios = require("axios");
+const { encode, decode } = require("../utils/Base64");
+const rootURL = "http://localhost:5000/api/";
+const judgeURL = "https://ce.judge0.com/submissions/";
+const judgeHeaders = {
+  "Content-Type": "application/json",
+  "x-rapidapi-key": process.env.x_rapidapi_key,
+  "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
+  useQueryString: true,
+};
+const judgeURLDefaultParams = "base64_encoded=true&wait=true";
 
 const controller = {
   getById: async (req, res) => {
@@ -267,6 +280,91 @@ const controller = {
         }
       }
     );
+  },
+  sendTest: async (req, res) => {
+    try {
+      const { test_id, student_id } = req.params;
+      const test = req.body;
+      const questions = test.questions;
+      const getExpectedAnswers = await axios.get(
+        `${rootURL}assignments/${test_id}/questions/privileged`
+      );
+      // console.log(test_id);
+      if (getExpectedAnswers) {
+        const answers = getExpectedAnswers.data;
+        // console.log(answers);
+        answers.forEach((item, index) => {
+          questions[index].language_id = test.language_id;
+          questions[index].stdin = test.stdin;
+          questions[index].expected_output = encode(item.raspunsuri);
+        });
+      }
+      // console.log(questions);
+      const postURL = judgeURL + "batch?" + judgeURLDefaultParams;
+      console.log(postURL);
+      const postSubmissions = await axios({
+        method: "post",
+        headers: judgeHeaders,
+        url: postURL,
+        data: JSON.stringify({ submissions: questions }),
+      });
+
+      const tokens = [];
+      if (postSubmissions) {
+        postSubmissions.data.forEach((item) => {
+          tokens.push(item.token);
+        });
+      }
+      console.log(tokens);
+      const stringifiedTokens = tokens.toString();
+
+      const getURL =
+        judgeURL +
+        "batch?tokens=" +
+        stringifiedTokens +
+        "&" +
+        judgeURLDefaultParams;
+      console.log(getURL);
+
+      async function getJudgeResponses() {
+        return axios({
+          method: "get",
+          headers: judgeHeaders,
+          url: getURL,
+        }).then((response) => {
+          if (response.data) {
+            if (response.data.submissions[0].status.id == 1) {
+              console.log("set timeout for another 200ms");
+              setTimeout(getJudgeResponses, 200);
+            } else {
+              console.log(response.data);
+              //save to DB;
+            }
+          }
+        });
+      }
+
+      setTimeout(getJudgeResponses, 900);
+
+      // const getJudgeResponses = await
+      //   axios({
+      //     method: "get",
+      //     headers: judgeHeaders,
+      //     url: getURL,
+      //   })
+      // ;
+
+      if (getJudgeResponses) {
+        // const results = getJudgeResponses.data.submissions;
+
+        res.status(200).json({ message: "Test trimis cu succes!" });
+      } else {
+        res.status(400).json({ message: "Testul nu a putut fi trimis!" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Eroare la server" });
+      console.log(error.message);
+    }
   },
 };
 

@@ -33,6 +33,7 @@ function TakeTest({ test }) {
   const [testCaseStatus, setTestCaseStatus] = useState(" ");
   const [judgeResponse, setJudgeResponse] = useState();
   const [isConsoleLoading, setIsConsoleLoading] = useState(false);
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState();
   const [codeEditorText, setCodeEditorText] = useState([]);
@@ -73,8 +74,8 @@ function TakeTest({ test }) {
 
   //When judgeResponse change
   useEffect(() => {
-    console.log("judge response changed");
     if (judgeResponse) {
+      console.log("judge response changed");
       setStdout(decode(judgeResponse.stdout));
       setTestCaseStatus(judgeResponse.status.description);
       setCompileError(decode(judgeResponse.compile_output));
@@ -105,7 +106,7 @@ function TakeTest({ test }) {
     console.log("getting assessment from judge...");
     setIsConsoleLoading(true);
     const judgeData = {
-      source_code: test.source_cod,
+      source_code: test.source_code,
       language_id: test.language_id,
       stdin: test.stdin,
     };
@@ -125,18 +126,55 @@ function TakeTest({ test }) {
   function executaBtnHandler() {
     if (!isConsoleLoading) {
       console.log("buton executa apasat");
-      const assignment = {
+      const question = {
         id: test.id,
         questionId: currentQuestion.id,
-        source_cod: encode(codeEditorText[currentQuestionIndex]),
+        source_code: encode(codeEditorText[currentQuestionIndex]),
         language_id: test.id_limbaj_programare,
         stdin: "",
       };
-      console.log(assignment);
-      getJudgeAssessment(assignment);
+      console.log(question);
+      getJudgeAssessment(question);
     }
   }
+  function handleSendBtn() {
+    if (!isSubmitLoading) {
+      setIsSubmitLoading(true);
+      const submission = {
+        test_id: test.id,
+        language_id: test.id_limbaj_programare,
+        stdin: "",
+        questions: [],
+      };
 
+      codeEditorText.forEach((code, index) => {
+        const question = {
+          questionId: testQuestions[index].id,
+          source_code: encode(code),
+        };
+        submission.questions.push(question);
+      });
+      console.log(submission);
+      postSubmission(submission);
+    }
+    setIsSubmitLoading(false);
+  }
+
+  async function postSubmission(submission) {
+    console.log(test.id);
+    try {
+      const response = await axios({
+        method: "post",
+        url: `${rootURL}/assignments/sendSubmission/${user.id}/${submission.test_id}`,
+        data: submission,
+      });
+      if (response) {
+        console.log(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   // useEffect(() => {
   //   console.log(codeEditorText);
   // }, [codeEditorText]);
@@ -190,7 +228,9 @@ function TakeTest({ test }) {
             </div>
           )}
         </ConsoleCard>
-        <SubmitBtn secondary>Trimite</SubmitBtn>
+        <SubmitBtn secondary onClick={handleSendBtn}>
+          {isSubmitLoading ? <div>Loading...</div> : <div>Trimite</div>}
+        </SubmitBtn>
       </Wrapper>
     </div>
   );
