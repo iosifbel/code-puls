@@ -333,18 +333,39 @@ const controller = {
           url: getURL,
         }).then((response) => {
           if (response.data) {
-            if (response.data.submissions[0].status.id == 1) {
-              console.log("set timeout for another 200ms");
-              setTimeout(getJudgeResponses, 200);
+            const submissions = response.data.submissions;
+            const unFinishedSubmissions = submissions.filter(
+              (item) => item.status.id === 1 || item.status.id === 2
+            ).length;
+            // const tokenStatus = response.data.submissions[0].status;
+            if (unFinishedSubmissions > 0) {
+              console.log(unFinishedSubmissions);
+              console.log("set timeout for another 500ms");
+              setTimeout(getJudgeResponses, 500);
             } else {
-              console.log(response.data);
-              //save to DB;
+              // console.log(response.data);
+              // console.log(student_id);
+              const evaluations = response.data.submissions;
+
+              saveToDb(student_id, test_id, questions, evaluations).then(
+                (dbResponse) => {
+                  // console.log(dbResponse);
+                  // const results = getJudgeResponses.data.submissions;
+                  if (dbResponse.status === 200) {
+                    res.status(200).json({ message: "Test trimis cu succes!" });
+                  } else {
+                    res
+                      .status(400)
+                      .json({ message: "Testul nu a putut fi salvat!" });
+                  }
+                }
+              );
             }
           }
         });
       }
 
-      setTimeout(getJudgeResponses, 900);
+      setTimeout(getJudgeResponses, 1000);
 
       // const getJudgeResponses = await
       //   axios({
@@ -353,19 +374,52 @@ const controller = {
       //     url: getURL,
       //   })
       // ;
-
-      if (getJudgeResponses) {
-        // const results = getJudgeResponses.data.submissions;
-
-        res.status(200).json({ message: "Test trimis cu succes!" });
-      } else {
-        res.status(400).json({ message: "Testul nu a putut fi trimis!" });
-      }
     } catch (error) {
       res.status(500).json({ message: "Eroare la server" });
       console.log(error.message);
     }
   },
 };
+
+async function saveToDb(studentId, testId, questions, evaluations) {
+  try {
+    evaluations.map(async (item, index) => {
+      decodeProps(item, ["stdout", "stderr", "compile_output", "message"]);
+      decodeProps(questions[index], ["source_code"]);
+    });
+
+    const code = [];
+    questions.forEach((item) => code.push(item.source_code));
+
+    return postQuestion(studentId, testId, code, evaluations);
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+async function postQuestion(studentId, testId, questions, evaluations) {
+  // console.log("Testid: " + testId);
+  // console.log("Studentid: " + studentId);
+  const postData = {
+    incercare: JSON.stringify(questions),
+    evaluareAutomata: JSON.stringify(evaluations),
+  };
+  // console.log(data);
+  return axios({
+    method: "put",
+    url: `${rootURL}/students/${studentId}/uploadAssessed/${testId}`,
+    data: postData,
+  }).catch((err) => {
+    console.log(err.response);
+  });
+}
+
+function decodeProps(object, props) {
+  props.forEach((prop) => {
+    if (object[prop] !== null) {
+      object[prop] = decode(object[prop]);
+    }
+  });
+}
 
 module.exports = controller;

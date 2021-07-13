@@ -158,9 +158,11 @@ const controller = {
         if (!err) {
           if (result) {
             if (result.affectedRows > 0)
-              res.status(200).send("Assignment uploaded");
+              res.status(200).json("Test incarcat cu succes!");
             else {
-              res.status(404).send("No student with this test assigned found");
+              res
+                .status(404)
+                .send("Nu a fost gasit niciun student cu acest test");
             }
           }
         } else {
