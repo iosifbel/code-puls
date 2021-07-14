@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { NavbarDataStudent } from "./NavbarDataStudent";
 import { NavbarDataTeacher } from "./NavbarDataTeacher";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { IconContext } from "react-icons/lib";
 import theme from "../Assets/theme";
@@ -12,13 +12,16 @@ import { AuthContext } from "../context/AuthContext";
 
 function Navbar(props) {
   const auth = useContext(AuthContext);
-  let NavbarData = auth.isStudent() ? NavbarDataStudent : NavbarDataTeacher;
+  const NavbarData = auth.isStudent() ? NavbarDataStudent : NavbarDataTeacher;
   const { showNavbar } = React.useContext(AppContext);
   const [active, setActive] = useState();
   const activeStyle = { color: theme.mainBlue };
+  const [location, setLocation] = useState(useLocation().pathname);
 
   function handleClick(menuItem) {
+    setLocation(null);
     setActive(menuItem);
+    // console.log(menuItem.path === location.pathname);
   }
 
   return !showNavbar ? null : (
@@ -43,7 +46,11 @@ function Navbar(props) {
                     <li key={index}>
                       <Link
                         to={item.path}
-                        style={active === item ? activeStyle : {}}
+                        style={
+                          location === item.path || active === item
+                            ? activeStyle
+                            : {}
+                        }
                         onClick={(e) => handleClick(item)}
                       >
                         {item.icon}
@@ -79,6 +86,9 @@ const Wrapper = styled.section`
     padding: 8px 0px 8px 16px;
     list-style: none;
     height: 60px;
+    font-style: "Roboto";
+    font-weight: 500;
+    color: ${theme.mainBlue};
 
     a {
       font-weight: 900;

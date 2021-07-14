@@ -78,7 +78,7 @@ function App() {
   return (
     <div>
       <Header></Header>
-      <Navbar type="teacher"></Navbar>
+      <Navbar></Navbar>
       <Switch>
         <AuthenticatedRoute path="/dashboard">
           <Dashboard type="teacher"></Dashboard>

@@ -24,8 +24,8 @@ const AppContext = React.createContext();
 const AppProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   // const [tests, setTests] = useState([]);
-  const [showNavbar, setShowNavbar] = useState(false);
-  const [showHeader, setShowHeader] = useState(false);
+  const [showNavbar, setShowNavbar] = useState(true);
+  const [showHeader, setShowHeader] = useState(true);
   const [testQuestions, setTestQuestions] = useState([
     { id: -1, descriere: "", raspunsuri: "" },
   ]);

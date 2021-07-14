@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Route, Switch, withRouter, Redirect } from "react-router-dom";
 import { TakeTest } from ".";
 import TestsGrid from "../components/testsGrid";
+import { AppContext } from "../context/context";
 
 function Tests() {
   const [test, setTest] = useState();
+  // const {setShowNavbar} = useContext(AppContext)
+  // setShowNavbar(true);
 
   const handleCallback = (childData) => {
     // console.log(childData);

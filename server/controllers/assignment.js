@@ -366,14 +366,6 @@ const controller = {
       }
 
       setTimeout(getJudgeResponses, 1000);
-
-      // const getJudgeResponses = await
-      //   axios({
-      //     method: "get",
-      //     headers: judgeHeaders,
-      //     url: getURL,
-      //   })
-      // ;
     } catch (error) {
       res.status(500).json({ message: "Eroare la server" });
       console.log(error.message);
