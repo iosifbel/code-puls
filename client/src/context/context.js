@@ -23,28 +23,31 @@ const ace = [
 const AppContext = React.createContext();
 const AppProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
-  // const [tests, setTests] = useState([]);
   const [showNavbar, setShowNavbar] = useState(true);
   const [showHeader, setShowHeader] = useState(true);
   const [testQuestions, setTestQuestions] = useState([
     { id: -1, descriere: "", raspunsuri: "" },
   ]);
   const [aceLanguages] = useState(ace);
-  // const [judgeResponse, setJudgeResponse] = useState();
+
+  const testInProgress = localStorage.getItem("testInProgress");
+
+  const [testState, setTestState] = useState(
+    testInProgress
+      ? JSON.parse(testInProgress)
+      : {
+          id: -1,
+          id_limbaj_programare: 48,
+        }
+  );
+  const setTestInProgress = (test) => {
+    localStorage.setItem("testInProgress", JSON.stringify(test));
+    // console.log("test");
+    setTestState(test);
+  };
+
   const [codeEditorText, setCodeEditorText] = useState();
 
-  // const getStudentTests = async () => {
-  //   console.log("getting tests from db..");
-  //   setIsLoading(true);
-  //   const response = await axios
-  //     .get(`${rootURL}/students/1/due`)
-  //     .catch((err) => console.log(err));
-
-  //   if (response) {
-  //     setTests(response.data);
-  //   }
-  //   setIsLoading(false);
-  // };
   const getTestQuestions = async (testId) => {
     console.log("getting questions from db..");
     setIsLoading(true);
@@ -58,28 +61,7 @@ const AppProvider = ({ children }) => {
     }
     setIsLoading(false);
   };
-  // const getJudgeAssessment = async (test) => {
-  //     console.log("getting assessment from judge...");
-  //     //setIsLoading(true);
-  //     const judgeData = {
-  //         source_code : test.source_cod,
-  //         language_id : test.language_id,
-  //         stdin : test.stdin
-  //     }
-  //     console.log(test.source_cod)
-  //     const response  = await axios({
-  //         method : "post",
-  //         url : `${rootURL}/questions/assess/${test.questionId}/${test.id}/1`,
-  //         data: judgeData
-  //     })
-  //     .catch((err) => console.log(err));
 
-  //     if(response) {
-  //         console.log(response.data)
-  //         setJudgeResponse(response.data);
-  //     }
-  //     //setIsLoading(false);
-  // }
   function encode(str) {
     return btoa(unescape(encodeURIComponent(str || "")));
   }
@@ -111,6 +93,8 @@ const AppProvider = ({ children }) => {
         decode,
         showHeader,
         setShowHeader,
+        testState,
+        setTestInProgress,
       }}
     >
       {children}{" "}

@@ -9,6 +9,7 @@ import {
   History,
   AddTest,
   Home,
+  TakeTest,
 } from "./pages";
 import { Switch, Route, Redirect } from "react-router-dom";
 import { useContext } from "react";
@@ -86,6 +87,9 @@ function App() {
         <AuthenticatedRoute path="/tests">
           <Tests></Tests>
         </AuthenticatedRoute>
+        {/* <StudentRoute path="/tests/takeTest">
+          <TakeTest></TakeTest>
+        </StudentRoute> */}
         <AuthenticatedRoute path="/history">
           <History></History>
         </AuthenticatedRoute>

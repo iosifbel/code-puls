@@ -6,6 +6,7 @@ const theme = {
   Grey1: "#BAC1C9",
   Grey2: "#E5E5E5",
   Blue1: "#0B2E5C",
+  white: "#FFFFFF",
 };
 
 export default theme;

@@ -8,7 +8,8 @@ import DefaultCode from "../components/defaultCodeData";
 import axios from "axios";
 const rootURL = "http://localhost:5000/api";
 
-function TakeTest({ test }) {
+function TakeTest() {
+  // console.log("salut");
   const { setShowNavbar, setShowHeader } = useContext(AppContext);
   setShowNavbar(false);
   setShowHeader(true);
@@ -18,7 +19,11 @@ function TakeTest({ test }) {
   const { authState } = auth;
   const user = authState.userInfo;
 
+  //get current test
+  const [test, setTest] = useState();
+
   const {
+    testState,
     testQuestions,
     getTestQuestions,
     isLoading,
@@ -40,37 +45,47 @@ function TakeTest({ test }) {
   const [currentCodeEditorText, setCurrentCodeEditorText] = useState();
   //onMount
   useEffect(() => {
+    console.log(testState);
+    setTest(testState);
     // console.log("onMount");
     // console.log(test.id);
-    getTestQuestions(test.id);
-    // console.log(testQuestions);
-    const aceLanguage = aceLanguages.find(
-      (language) => language.id == test.id_limbaj_programare
-    );
-    if (aceLanguage) {
-      setLanguage(aceLanguage.name);
-    }
   }, []);
+  useEffect(() => {
+    if (test) {
+      getTestQuestions(test.id);
+      // console.log(testQuestions);
+      const aceLanguage = aceLanguages.find(
+        (language) => language.id == test.id_limbaj_programare
+      );
+      if (aceLanguage) {
+        setLanguage(aceLanguage.name);
+      }
+    }
+  }, [test]);
 
   useEffect(() => {
     setCurrentQuestion(testQuestions[0]);
   }, [testQuestions]);
 
   //Initialize codeEditor with default code
-  useEffect(() => {
-    if (testQuestions) {
-      const defaultCode = DefaultCode.find(
-        (item) => item.id == test.id_limbaj_programare
-      );
-      if (defaultCode) {
-        let array = [];
-        testQuestions.map((element) => {
-          array.push(defaultCode.code);
-        });
-        setCodeEditorText(array);
+  useEffect(
+    () => {
+      if (testQuestions && test) {
+        const defaultCode = DefaultCode.find(
+          (item) => item.id == test.id_limbaj_programare
+        );
+        if (defaultCode) {
+          let array = [];
+          testQuestions.map((element) => {
+            array.push(defaultCode.code);
+          });
+          setCodeEditorText(array);
+        }
       }
-    }
-  }, [testQuestions]);
+    },
+    [testQuestions],
+    [test]
+  );
 
   //When judgeResponse change
   useEffect(() => {

@@ -16,8 +16,8 @@ import { AuthContext } from "../context/AuthContext";
 const rootURL = "http://localhost:5000/api";
 
 function TestsGrid(props) {
-  const { setShowHeader } = React.useContext(AppContext);
-  setShowHeader(true);
+  const { testInProgress, setTestInProgress } = useContext(AppContext);
+  // setShowHeader(true);
 
   const auth = useContext(AuthContext);
   const { authState } = auth;
@@ -50,12 +50,25 @@ function TestsGrid(props) {
     setIsLoading(false);
   };
 
+  useEffect(() => {
+    if (clickedTest) {
+      setTestInProgress(clickedTest);
+      console.log(testInProgress);
+    }
+  }, [clickedTest]);
+
   const testClicked = (e) => {
-    console.log("clicked card with id " + e.target.id);
-    const clickedTest = tests.find((test) => test.id == e.target.id);
-    props.parentCallBack(clickedTest);
-    setClickedTest(clickedTest);
-    // e.preventDefault();
+    if (testInProgress.id < 0) {
+      console.log("clicked card with id " + e.target.id);
+      const clickedTest = tests.find((test) => test.id == e.target.id);
+      // props.parentCallBack(clickedTest);
+      setClickedTest(clickedTest);
+      e.preventDefault();
+    } else {
+      console.log("test already in progress");
+      console.log(testInProgress);
+      e.preventDefault();
+    }
   };
 
   if (isLoading) {
@@ -74,7 +87,7 @@ function TestsGrid(props) {
       <Wrapper>
         {tests.map((test) => (
           <div key={test.id}>
-            {/* <Link to={`${url}/takeTest`} onClick={testClicked}> */}
+            {/* <Link onClick=> */}
             <StyledCard id={test.id} onClick={testClicked}>
               {test.titlu}
             </StyledCard>
@@ -112,9 +125,10 @@ const TestsContainer = styled.div`
 `;
 
 const StyledCard = styled(Card)`
+  cursor: pointer;
   // width: 20vw;
   margin-top: 1%;
   margin-bottom: 1%;
 `;
 
-export default TestsGrid;
+export default withRouter(TestsGrid);
