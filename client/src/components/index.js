@@ -6,6 +6,7 @@ import FormError from "./FormError";
 import QuestionSlider from "./QuestionSlider";
 import TestsTable from "./TestsTable";
 import TestsGrid from "./testsGrid";
+import AlertBar from "./AlertBar";
 
 export {
   Header,
@@ -16,4 +17,5 @@ export {
   QuestionSlider,
   TestsTable,
   TestsGrid,
+  AlertBar,
 };

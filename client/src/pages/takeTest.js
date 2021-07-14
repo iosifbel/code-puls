@@ -1,11 +1,12 @@
 import { Card, Button } from "../components/defaultComponents";
-import { CodeEditor, Loader, QuestionSlider } from "../components";
+import { CodeEditor, Loader, QuestionSlider, AlertBar } from "../components";
 import styled from "styled-components";
 import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { AppContext } from "../context/context";
 import DefaultCode from "../components/defaultCodeData";
 import axios from "axios";
+
 const rootURL = "http://localhost:5000/api";
 
 function TakeTest() {
@@ -30,6 +31,7 @@ function TakeTest() {
     aceLanguages,
     encode,
     decode,
+    removeTestInProgress,
   } = React.useContext(AppContext);
 
   const [language, setLanguage] = useState("javascript");
@@ -43,9 +45,15 @@ function TakeTest() {
   const [currentQuestion, setCurrentQuestion] = useState();
   const [codeEditorText, setCodeEditorText] = useState([]);
   const [currentCodeEditorText, setCurrentCodeEditorText] = useState();
+  const [alert, setAlert] = useState({
+    open: false,
+    severity: "success",
+    message: "",
+  });
+
   //onMount
   useEffect(() => {
-    console.log(testState);
+    // console.log(testState);
     setTest(testState);
     // console.log("onMount");
     // console.log(test.id);
@@ -98,8 +106,8 @@ function TakeTest() {
   }, [judgeResponse]);
 
   function questionChanged(question, index) {
-    console.log(testQuestions);
-    console.log(question);
+    // console.log(testQuestions);
+    // console.log(question);
     setCurrentQuestionIndex(index);
     setCurrentQuestion(question);
   }
@@ -154,7 +162,6 @@ function TakeTest() {
   }
   function handleSendBtn() {
     if (!isSubmitLoading) {
-      setIsSubmitLoading(true);
       const submission = {
         test_id: test.id,
         language_id: test.id_limbaj_programare,
@@ -169,14 +176,14 @@ function TakeTest() {
         };
         submission.questions.push(question);
       });
-      console.log(submission);
+      // console.log(submission);
       postSubmission(submission);
     }
-    setIsSubmitLoading(false);
   }
 
   async function postSubmission(submission) {
-    console.log(test.id);
+    // console.log(test.id);
+    setIsSubmitLoading(true);
     try {
       const response = await axios({
         method: "post",
@@ -184,10 +191,31 @@ function TakeTest() {
         data: submission,
       });
       if (response) {
-        console.log(response.data);
+        // console.log(response.data);
+        if (response.status === 200) {
+          setAlert({
+            open: true,
+            severity: "success",
+            message: response.data.message,
+          });
+          console.log("ceva");
+          removeTestInProgress();
+        } else {
+          setAlert({
+            open: true,
+            severity: "warning",
+            message: response.data.message,
+          });
+        }
       }
+      setIsSubmitLoading(false);
     } catch (error) {
       console.log(error.response.data.message);
+      setAlert({
+        open: true,
+        severity: "error",
+        message: error.response.data.message,
+      });
     }
   }
   // useEffect(() => {
@@ -201,15 +229,16 @@ function TakeTest() {
   return (
     <div>
       <Wrapper>
+        <AlertBar
+          open={alert.open}
+          severity={alert.severity}
+          message={alert.message}
+        />
         <ProblemCard>
           <QuestionSlider
             questions={testQuestions}
             callback={questionChanged}
           ></QuestionSlider>
-          {/* {testQuestions.map((question) => (
-            <h3>{question.descriere}</h3>
-          ))}
-          <h3>{testQuestions[0].descriere}</h3> */}
         </ProblemCard>
         <EditorCard>
           <CodeEditor

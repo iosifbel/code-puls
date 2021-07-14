@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useHistory } from "react-router-dom";
 const rootURL = "http://localhost:5000/api";
 
 const judge0Languges = [
@@ -21,7 +22,10 @@ const ace = [
 ];
 
 const AppContext = React.createContext();
+
 const AppProvider = ({ children }) => {
+  const history = useHistory();
+
   const [isLoading, setIsLoading] = useState(false);
   const [showNavbar, setShowNavbar] = useState(true);
   const [showHeader, setShowHeader] = useState(true);
@@ -44,6 +48,15 @@ const AppProvider = ({ children }) => {
     localStorage.setItem("testInProgress", JSON.stringify(test));
     // console.log("test");
     setTestState(test);
+  };
+
+  const removeTestInProgress = () => {
+    console.log("iesi");
+    localStorage.removeItem("testInProgress");
+    setTimeout(() => {
+      history.push("/tests");
+      setTestState({});
+    }, 1000);
   };
 
   const [codeEditorText, setCodeEditorText] = useState();
@@ -95,6 +108,7 @@ const AppProvider = ({ children }) => {
         setShowHeader,
         testState,
         setTestInProgress,
+        removeTestInProgress,
       }}
     >
       {children}{" "}

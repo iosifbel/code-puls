@@ -25,7 +25,7 @@ const QuestionSlider = (props) => {
       <Wrapper index={index}>
         <ul>
           {props.questions.map((element, index) => (
-            <li id={index} onClick={clickHandler}>
+            <li key={index} id={index} onClick={clickHandler}>
               {`Întrebarea ${index + 1}`}
             </li>
           ))}
