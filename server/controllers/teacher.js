@@ -64,7 +64,7 @@ const controller = {
   getAllUngradedSubmissions: async (req, res) => {
     connection.query(
       mysql.format(
-        "SELECT t.titlu, t.id_materie, s.nume, s.prenume, s.grupa, n.incercare, n.evaluareAutomata, n.intarziat, m.id_profesor, p.nume FROM studenti s JOIN note n ON n.id_student = s.id JOIN teste t ON n.id_test = t.id JOIN materii m ON m.id = t.id_materie JOIN profesori p ON m.id_profesor = p.id WHERE m.id_profesor = ? AND n.incercare IS NOT NULL AND n.nota IS NULL",
+        "SELECT t.titlu, t.id_materie, t.id_limbaj_programare, t.deadline, s.nume, s.prenume, s.grupa, n.incercare, n.evaluareAutomata, n.intarziat, p.nume FROM studenti s JOIN note n ON n.id_student = s.id JOIN teste t ON n.id_test = t.id JOIN materii m ON m.id = t.id_materie JOIN profesori p ON m.id_profesor = p.id WHERE m.id_profesor = ? AND n.incercare IS NOT NULL AND n.nota IS NULL AND NOW() > t.deadline",
         [req.params.teacher_id]
       ),
 
@@ -77,6 +77,7 @@ const controller = {
           }
         } else {
           res.status(500).send("Server error" + err);
+          console.log(err);
         }
       }
     );

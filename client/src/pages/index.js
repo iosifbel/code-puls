@@ -8,6 +8,7 @@ import Settings from "./settings";
 import TakeTest from "./takeTest";
 import AddTest from "./addTest";
 import Home from "./home";
+import EvaluateTest from "./evaluateTest";
 
 export {
   Login,
@@ -20,4 +21,5 @@ export {
   TakeTest,
   AddTest,
   Home,
+  EvaluateTest,
 };

@@ -10,7 +10,7 @@ import Paper from "@material-ui/core/Paper";
 import styled from "styled-components";
 import theme from "../Assets/theme";
 import { Card } from "./defaultComponents";
-import { AppContext } from "../context";
+import { AppContext, AuthContext } from "../context";
 
 const StyledTableCell = withStyles(() => ({
   head: {
@@ -31,20 +31,57 @@ const StyledTableRow = withStyles(() => ({
 }))(TableRow);
 
 const useStyles = makeStyles({
-  //   table: {
-  //     minWidth: 500,
-  //   },
+  table: {
+    // minWidth: 500,
+    // marginInline: 200,
+    // minHeight: 200,
+  },
 });
 
+const studentColumns = ["Titlu", "Materie", "Limbaj", "Deadline"];
+const teacherColumns = [
+  "Nume",
+  "Prenume",
+  "Grupa",
+  "Titlu Test",
+  "Materie",
+  "Limbaj",
+  "Deadline",
+];
+
+const studentDataColumns = ["titlu", "id_materie", "limbaj", "deadline"];
+
+const teacherDataColumns = [
+  "nume",
+  "prenume",
+  "grupa",
+  "titlu",
+  "id_materie",
+  "limbaj",
+  "deadline",
+];
+
 function TestsTable(props) {
+  const user = useContext(AuthContext).authState.userInfo;
+
+  const [columns, setColumns] = useState([]);
+  const [dataColumns, setDataColumns] = useState([]);
   const { judge0Languges } = useContext(AppContext);
   const classes = useStyles();
+
   function rowClicked(e) {
     props.callback(e.target.id);
     e.preventDefault();
   }
 
   useEffect(() => {
+    if (user.tip === "student") {
+      setColumns(studentColumns);
+      setDataColumns(studentDataColumns);
+    } else {
+      setColumns(teacherColumns);
+      setDataColumns(teacherDataColumns);
+    }
     console.log(props.data);
   }, [props.data]);
 
@@ -56,35 +93,43 @@ function TestsTable(props) {
           <Table
             className={classes.table}
             aria-label="customized table"
-            options={{
-              search: true,
-            }}
           ></Table>
           <TableHead>
             <TableRow>
-              <StyledTableCell>Titlu</StyledTableCell>
-              <StyledTableCell align="center">Materie</StyledTableCell>
-              <StyledTableCell align="center">Limbaj</StyledTableCell>
-              <StyledTableCell align="center">Deadline</StyledTableCell>
+              {columns.map((item, index) => (
+                <StyledTableCell
+                  key={index}
+                  align={index !== 0 ? "center" : ""}
+                >
+                  {item}
+                </StyledTableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {props.data.map((item) => (
-              <StyledTableRow>
-                <a href="tests/takeTest" onClick={(e) => e.preventDefault()}>
-                  <StyledTableCell id={item.id} onClick={rowClicked}>
-                    {item.titlu}
-                  </StyledTableCell>
-                </a>
-                <StyledTableCell align="center">
-                  {item.id_materie}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  {getLanguage(item.id_limbaj_programare, judge0Languges)}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  {parseDateTime(item.deadline)}
-                </StyledTableCell>
+            {props.data.map((item, index) => (
+              <StyledTableRow key={index}>
+                {dataColumns.map((column, cindex) => {
+                  if (cindex === 0) {
+                    return (
+                      <StyledTableCell key={cindex}>
+                        <a
+                          href={props.redirectPath}
+                          id={item.id}
+                          onClick={rowClicked}
+                        >
+                          {item[column]}
+                        </a>
+                      </StyledTableCell>
+                    );
+                  } else {
+                    return (
+                      <StyledTableCell key={cindex}>
+                        {item[column]}
+                      </StyledTableCell>
+                    );
+                  }
+                })}
               </StyledTableRow>
             ))}
           </TableBody>
@@ -93,29 +138,6 @@ function TestsTable(props) {
     </Wrapper>
   );
 }
-
-const parseDateTime = (datetime) => {
-  try {
-    const date = new Date(datetime);
-    // console.log(date.getTime());
-    return (
-      date.toLocaleDateString("ro-RO") +
-      ", ora " +
-      date.getHours() +
-      ":" +
-      date.getMinutes()
-    );
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const getLanguage = (languageId, languages) => {
-  const language = languages.find((item) => item.id === languageId);
-  const regexToRemoveParanthesis = / *\([^)]*\) */g;
-
-  return language.name.replace(regexToRemoveParanthesis, "");
-};
 
 const TableTitle = styled.div`
   font-style: "Roboto";

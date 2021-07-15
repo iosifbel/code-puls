@@ -10,6 +10,7 @@ import {
   AddTest,
   Home,
   TakeTest,
+  EvaluateTest,
 } from "./pages";
 import { Switch, Route, Redirect } from "react-router-dom";
 import { useContext } from "react";
@@ -84,17 +85,20 @@ function App() {
         <AuthenticatedRoute path="/dashboard">
           <Dashboard type="teacher"></Dashboard>
         </AuthenticatedRoute>
-        <AuthenticatedRoute path="/tests">
+        <AuthenticatedRoute path="/tests" exact={true}>
           <Tests></Tests>
         </AuthenticatedRoute>
-        {/* <StudentRoute path="/tests/takeTest">
+        <StudentRoute path="/tests/takeTest">
           <TakeTest></TakeTest>
-        </StudentRoute> */}
+        </StudentRoute>
         <AuthenticatedRoute path="/history">
           <History></History>
         </AuthenticatedRoute>
         <TeacherRoute path="/addTest">
           <AddTest></AddTest>
+        </TeacherRoute>
+        <TeacherRoute path="/tests/evaluateTest">
+          <EvaluateTest></EvaluateTest>
         </TeacherRoute>
         <AuthenticatedRoute path="/settings">
           <Settings></Settings>
