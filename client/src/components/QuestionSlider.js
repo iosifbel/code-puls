@@ -42,6 +42,7 @@ const Wrapper = styled.div`
   li {
     font-family: "Roboto", sans-serif;
     font-weight: normal;
+    font-size: 1rem;
     color: black;
     /*  background-color: #404040; */
     float: left;
@@ -81,6 +82,6 @@ const Wrapper = styled.div`
     margin: 0;
     display: flex;
     justify-content: center;
-    margin-bottom: 5rem;
+    margin-bottom: 4rem;
   }
 `;

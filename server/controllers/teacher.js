@@ -71,7 +71,7 @@ const controller = {
       (err, result) => {
         if (!err) {
           if (result) {
-            console.log(result);
+            // console.log(result);
             res.status(200).send(result);
           } else {
             res.status(404).send("Not found");

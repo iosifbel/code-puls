@@ -29,6 +29,7 @@ function Header() {
 
 const Wrapper = styled.div`
   display: flex;
+  height: 7vh;
   // justify-content: end;
 
   nav {

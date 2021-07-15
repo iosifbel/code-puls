@@ -78,7 +78,7 @@ const UnauthenticatedRoutes = () => (
 
 function App() {
   return (
-    <div>
+    <>
       <Header></Header>
       <Navbar></Navbar>
       <Switch>
@@ -105,7 +105,7 @@ function App() {
         </AuthenticatedRoute>
         <UnauthenticatedRoutes />
       </Switch>
-    </div>
+    </>
   );
 }
 
