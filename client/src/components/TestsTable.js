@@ -110,7 +110,7 @@ function TestsTable(props) {
             {props.data.map((item, index) => (
               <StyledTableRow key={index}>
                 {dataColumns.map((column, cindex) => {
-                  if (cindex === 0) {
+                  if (column === "titlu") {
                     return (
                       <StyledTableCell key={cindex}>
                         <a
