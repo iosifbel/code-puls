@@ -17,11 +17,11 @@ const rootURL = utils.rootURL;
 function Tests() {
   const user = useContext(AuthContext).authState.userInfo;
 
-  // const { authState } = auth;
-  // const user = authState.userInfo;
   const [tests, setTests] = useState();
   const [isLoading, setIsLoading] = useState(true);
+
   const [redirectToTakeTest, setRedirectToTakeTest] = useState(false);
+
   const { path } = useRouteMatch();
   const { testState, setTestInProgress } = useContext(AppContext);
 
@@ -30,10 +30,13 @@ function Tests() {
 
   const handleCallback = (childData) => {
     const clickedTestId = parseInt(childData);
-    const clickedTest = tests.find((item) => item.id === clickedTestId);
-    // console.log(clickedTest);
-    setTestInProgress(clickedTest);
-    setRedirectToTakeTest(true);
+    if (testState.id < 0 || testState.id === clickedTestId) {
+      const clickedTest = tests.find((item) => item.id === clickedTestId);
+      setTestInProgress(clickedTest);
+      setRedirectToTakeTest(true);
+    } else {
+      console.log("test already in progress..");
+    }
   };
 
   useEffect(() => {
