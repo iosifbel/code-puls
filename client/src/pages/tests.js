@@ -35,27 +35,14 @@ function Tests() {
 
   const handleCallback = (childData) => {
     const clickedTestId = parseInt(childData);
-    if (user.tip === "student") {
-      if (testState.id < 0 || testState.id === clickedTestId) {
-        const clickedTest = tests.find((item) => item.id === clickedTestId);
-        // console.log(clickedTestId);
-        setTestInProgress(clickedTest);
-        setRedirect(true);
-        history.push(redirectPath);
-      } else {
-        console.log("test already in progress..");
-        setAlert({
-          open: true,
-          severity: "warning",
-          message: `${testState.titlu} deja deschis!`,
-        });
-      }
-    } else {
+    console.log(testState.id);
+    if (testState.id < 0 || testState.id === clickedTestId) {
+      const clickedTest = tests.find((item) => item.id === clickedTestId);
+      setTestInProgress(clickedTest);
       setRedirect(true);
       history.push(redirectPath);
     }
   };
-
   useEffect(() => {
     getTests(user, setIsLoading, setTests, judge0Languges);
     console.log(tests);

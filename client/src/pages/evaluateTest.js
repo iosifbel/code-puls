@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import styled from "styled-components";
 import theme from "../Assets/theme";
 import { AppContext } from "../context";
@@ -9,6 +9,8 @@ import * as yup from "yup";
 import { Form, Col } from "react-bootstrap";
 // import "bootstrap/dist/css/bootstrap.min.css";
 import MuiAlert from "@material-ui/lab/Alert";
+import axios, { handleAxiosError, handleUnexpectedError } from "axios";
+import { utils } from "../context";
 
 const schema = yup.object().shape({
   feedback: yup.string(),
@@ -18,10 +20,71 @@ const schema = yup.object().shape({
     .required("Nota finala trebuie compeltata"),
 });
 
+const processData = (data) => {
+  try {
+    let { incercare, evaluareAutomata } = data;
+    data.incercare = JSON.parse(incercare);
+    data.evaluareAutomata = JSON.parse(evaluareAutomata);
+    const submission = [];
+    data.incercare.forEach((item, index) => {
+      submission.push({
+        questionCode: item,
+        assessment: data.evaluareAutomata[index],
+      });
+    });
+    return submission;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getSubmission = async (
+  student_id,
+  test_id,
+  setSubmission,
+  setIsLoading
+) => {
+  try {
+    setIsLoading(true);
+    const { data } = await axios.get(
+      `${utils.rootURL}/grades/submission/${test_id}/${student_id}`
+    );
+    // console.log(data);
+    const submission = processData(data[0]);
+    // console.log(submission);
+    setSubmission(submission);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      handleAxiosError(error);
+    } else {
+      handleUnexpectedError(error);
+    }
+  }
+  setIsLoading(false);
+};
+
 function EvaluateTest() {
-  const { setShowNavbar } = useContext(AppContext);
-  // const [feedback, setFeedback] = useState("");
-  console.log("esti in pagina de evaluare boss");
+  const { setShowNavbar, testState, setTestInProgress } =
+    useContext(AppContext);
+  const [submission, setSubmission] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    console.log("esti in pagina de evaluare boss");
+    // console.log(testState);
+    getSubmission(testState.id, testState.id_test, setSubmission, setIsLoading);
+  }, [testState]);
+
+  useEffect(() => {
+    if (submission) {
+      console.log(submission);
+    }
+  }, [submission]);
+
+  const sliderHandler = (question, index) => {
+    console.log(index);
+  };
+
   setShowNavbar(false);
   return (
     <Formik
@@ -48,7 +111,13 @@ function EvaluateTest() {
         <Form noValidate onSubmit={handleSubmit}>
           <Wrapper>
             <EditorCard>
-              <QuestionSlider questions={["ceva", "altceva"]}></QuestionSlider>
+              <QuestionSlider
+                questions={[
+                  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
+                  "altceva",
+                ]}
+                callback={sliderHandler}
+              ></QuestionSlider>
               <CodeEditor
                 language={"javascript"}
                 value={"console.log('test');"}

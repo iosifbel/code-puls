@@ -64,7 +64,7 @@ const controller = {
   getAllUngradedSubmissions: async (req, res) => {
     connection.query(
       mysql.format(
-        "SELECT t.titlu, t.id_materie, t.id_limbaj_programare, t.deadline, s.nume, s.prenume, s.grupa, n.incercare, n.evaluareAutomata, n.intarziat FROM studenti s JOIN note n ON n.id_student = s.id JOIN teste t ON n.id_test = t.id JOIN materii m ON m.id = t.id_materie JOIN profesori p ON m.id_profesor = p.id WHERE m.id_profesor = ? AND n.incercare IS NOT NULL AND n.nota IS NULL AND NOW() > t.deadline",
+        "SELECT n.id_test, t.titlu, t.id_materie, t.id_limbaj_programare, t.deadline, s.id, s.nume, s.prenume, s.grupa, n.incercare, n.evaluareAutomata, n.intarziat FROM studenti s JOIN note n ON n.id_student = s.id JOIN teste t ON n.id_test = t.id JOIN materii m ON m.id = t.id_materie JOIN profesori p ON m.id_profesor = p.id WHERE m.id_profesor = ? AND n.incercare IS NOT NULL AND n.nota IS NULL AND NOW() > t.deadline",
         [req.params.teacher_id]
       ),
 

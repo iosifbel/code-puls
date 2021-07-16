@@ -30,7 +30,7 @@ const QuestionSlider = (props) => {
             </li>
           ))}
         </ul>
-        {question && <p>{question.descriere}</p>}
+        <div className="questionBody">{question && <p>{question}</p>}</div>
       </Wrapper>
     </>
   );
@@ -39,6 +39,12 @@ const QuestionSlider = (props) => {
 export default QuestionSlider;
 
 const Wrapper = styled.div`
+  margin-bottom: 2rem;
+  .questionBody {
+    width: 100%;
+    max-height: 6rem;
+    overflow: auto;
+  }
   li {
     font-family: "Roboto", sans-serif;
     font-weight: normal;
