@@ -50,8 +50,13 @@ function Login() {
       url: `${rootURL}/auth/login`,
       data: user,
     }).catch((err) => {
-      console.log(err.response.data.message);
-      setLoginError(err.response.data.message);
+      if (err.response) {
+        console.log(err.response.data.message);
+        setLoginError(err.response.data.message);
+      } else {
+        setLoginError("Serverul nu raspunde");
+      }
+
       setLoginSuccess(null);
     });
     if (response) {
