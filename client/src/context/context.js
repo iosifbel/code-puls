@@ -40,8 +40,8 @@ const AppProvider = ({ children }) => {
     testInProgress
       ? JSON.parse(testInProgress)
       : {
-          id: -1,
-          id_limbaj_programare: 48,
+          // id: -1,
+          // id_limbaj_programare: 48,
         }
   );
   const setTestInProgress = (test) => {

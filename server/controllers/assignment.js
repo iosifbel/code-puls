@@ -286,6 +286,12 @@ const controller = {
       const { test_id, student_id } = req.params;
       const test = req.body;
       const questions = test.questions;
+
+      const deadline = new Date(test.deadline);
+
+      const late = deadline < Date.now();
+      console.log(late);
+
       const getExpectedAnswers = await axios.get(
         `${rootURL}assignments/${test_id}/questions/privileged`
       );
@@ -324,7 +330,7 @@ const controller = {
         stringifiedTokens +
         "&" +
         judgeURLDefaultParams;
-      console.log(getURL);
+      // console.log(getURL);
 
       async function getJudgeResponses() {
         return axios({
@@ -339,27 +345,40 @@ const controller = {
             ).length;
             // const tokenStatus = response.data.submissions[0].status;
             if (unFinishedSubmissions > 0) {
-              console.log(unFinishedSubmissions);
-              console.log("set timeout for another 500ms");
+              // console.log(unFinishedSubmissions);
+              // console.log("set timeout for another 500ms");
               setTimeout(getJudgeResponses, 500);
             } else {
               // console.log(response.data);
               // console.log(student_id);
               const evaluations = response.data.submissions;
-
-              saveToDb(student_id, test_id, questions, evaluations).then(
-                (dbResponse) => {
-                  // console.log(dbResponse);
-                  // const results = getJudgeResponses.data.submissions;
-                  if (dbResponse.status === 200) {
-                    res.status(200).json({ message: "Test trimis cu succes!" });
-                  } else {
-                    res
-                      .status(400)
-                      .json({ message: "Testul nu a putut fi salvat!" });
-                  }
+              console.log(evaluations);
+              const correctAnswersCount = evaluations.filter(
+                (item) => item.status.id === 3
+              ).length;
+              const automaticGrade = (
+                (correctAnswersCount / evaluations.length) *
+                10
+              ).toFixed(2);
+              // console.log("automaticGrade: " + automaticGrade);
+              saveToDb(
+                student_id,
+                test_id,
+                questions,
+                evaluations,
+                late,
+                automaticGrade
+              ).then((dbResponse) => {
+                // console.log(dbResponse);
+                // const results = getJudgeResponses.data.submissions;
+                if (dbResponse.status === 200) {
+                  res.status(200).json({ message: "Test trimis cu succes!" });
+                } else {
+                  res
+                    .status(400)
+                    .json({ message: "Testul nu a putut fi salvat!" });
                 }
-              );
+              });
             }
           }
         });
@@ -373,7 +392,14 @@ const controller = {
   },
 };
 
-async function saveToDb(studentId, testId, questions, evaluations) {
+async function saveToDb(
+  studentId,
+  testId,
+  questions,
+  evaluations,
+  late,
+  automaticGrade
+) {
   try {
     evaluations.map(async (item, index) => {
       decodeProps(item, ["stdout", "stderr", "compile_output", "message"]);
@@ -383,18 +409,34 @@ async function saveToDb(studentId, testId, questions, evaluations) {
     const code = [];
     questions.forEach((item) => code.push(item.source_code));
 
-    return postQuestion(studentId, testId, code, evaluations);
+    return postQuestion(
+      studentId,
+      testId,
+      code,
+      evaluations,
+      late,
+      automaticGrade
+    );
   } catch (error) {
     console.log(error.message);
   }
 }
 
-async function postQuestion(studentId, testId, questions, evaluations) {
+async function postQuestion(
+  studentId,
+  testId,
+  questions,
+  evaluations,
+  late,
+  automaticGrade
+) {
   // console.log("Testid: " + testId);
   // console.log("Studentid: " + studentId);
   const postData = {
     incercare: JSON.stringify(questions),
     evaluareAutomata: JSON.stringify(evaluations),
+    intarziat: late,
+    notaAutomata: automaticGrade,
   };
   // console.log(data);
   return axios({

@@ -35,8 +35,8 @@ function Tests() {
 
   const handleCallback = (childData) => {
     const clickedTestId = parseInt(childData);
-    console.log(testState.id);
-    if (testState.id < 0 || testState.id === clickedTestId) {
+    console.log(testState);
+    if (testState || testState.id === clickedTestId) {
       const clickedTest = tests.find((item) => item.id === clickedTestId);
       setTestInProgress(clickedTest);
       setRedirect(true);
@@ -120,7 +120,7 @@ const getTests = async (user, setIsLoading, setTests, languages) => {
 const processTests = (tests, languages) => {
   tests.forEach((item) => {
     if (item.deadline !== null) {
-      item.deadline = parseDateTime(item.deadline);
+      item.formatedDeadline = parseDateTime(item.deadline);
     }
     if (item.id_limbaj_programare !== null) {
       item.limbaj = getLanguage(item.id_limbaj_programare, languages);

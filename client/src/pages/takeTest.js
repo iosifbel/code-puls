@@ -167,6 +167,7 @@ function TakeTest() {
         language_id: test.id_limbaj_programare,
         stdin: "",
         questions: [],
+        deadline: test.deadline,
       };
 
       codeEditorText.forEach((code, index) => {

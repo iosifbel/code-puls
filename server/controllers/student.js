@@ -146,10 +146,12 @@ const controller = {
   uploadAssessedAssignment: async (req, res) => {
     connection.query(
       mysql.format(
-        "UPDATE note SET incercare = ?, evaluareAutomata = ? WHERE id_student = ? AND id_test = ?",
+        "UPDATE note SET incercare = ?, evaluareAutomata = ?, notaAutomata = ?, intarziat = ? WHERE id_student = ? AND id_test = ?",
         [
           req.body.incercare,
           req.body.evaluareAutomata,
+          req.body.notaAutomata,
+          req.body.intarziat,
           req.params.student_id,
           req.params.test_id,
         ]

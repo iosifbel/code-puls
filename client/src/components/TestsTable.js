@@ -49,7 +49,12 @@ const teacherColumns = [
   "Deadline",
 ];
 
-const studentDataColumns = ["titlu", "id_materie", "limbaj", "deadline"];
+const studentDataColumns = [
+  "titlu",
+  "id_materie",
+  "limbaj",
+  "formatedDeadline",
+];
 
 const teacherDataColumns = [
   "nume",
@@ -58,7 +63,7 @@ const teacherDataColumns = [
   "titlu",
   "id_materie",
   "limbaj",
-  "deadline",
+  "formatedDeadline",
 ];
 
 function TestsTable(props) {

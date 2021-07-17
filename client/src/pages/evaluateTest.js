@@ -2,7 +2,7 @@ import { useContext, useState, useEffect } from "react";
 import styled from "styled-components";
 import theme from "../Assets/theme";
 import { AppContext } from "../context";
-import { QuestionSlider, CodeEditor } from "../components";
+import { QuestionSlider, CodeEditor, AlertBar } from "../components";
 import { Card, Button } from "../components/defaultComponents";
 import { Formik, useFormik } from "formik";
 import * as yup from "yup";
@@ -17,7 +17,7 @@ const schema = yup.object().shape({
   finalGrade: yup
     .string()
     .matches(/^([1-9]{1}(\.\d{1,2})?|10)$/, "Format acceptat: 9.97")
-    .required("Nota finala trebuie compeltata"),
+    .required("Nota finală trebuie completată"),
 });
 
 const processData = (data) => {
@@ -28,6 +28,7 @@ const processData = (data) => {
     const submission = [];
     data.incercare.forEach((item, index) => {
       submission.push({
+        // questionBody: data.questions[index],
         questionCode: item,
         assessment: data.evaluareAutomata[index],
       });
@@ -42,165 +43,278 @@ const getSubmission = async (
   student_id,
   test_id,
   setSubmission,
-  setIsLoading
+  setQuestions,
+  setIsLoading,
+  setAutomaticGrade,
+  setLateStatus
 ) => {
   try {
     setIsLoading(true);
     const { data } = await axios.get(
       `${utils.rootURL}/grades/submission/${test_id}/${student_id}`
     );
-    // console.log(data);
-    const submission = processData(data[0]);
-    // console.log(submission);
+
+    const submission = processData(data);
+
     setSubmission(submission);
+    setQuestions(data.questions);
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      handleAxiosError(error);
+    console.log(error);
+  }
+  setIsLoading(false);
+};
+
+const gradeSubmission = async (
+  submission,
+  test_id,
+  student_id,
+  setIsLoading,
+  removeTestInProgress,
+  setAlert
+) => {
+  try {
+    setIsLoading(true);
+    const response = await axios({
+      method: "put",
+      url: `${utils.rootURL}/grades/grade/${test_id}/${student_id}`,
+      data: submission,
+    });
+
+    console.log(response);
+
+    if (response.status === 200) {
+      setAlert({
+        open: true,
+        severity: "success",
+        message: response.data.message,
+      });
+      // console.log("ceva");
+      removeTestInProgress();
     } else {
-      handleUnexpectedError(error);
+      setAlert({
+        open: true,
+        severity: "warning",
+        message: response.data.message,
+      });
     }
+  } catch (error) {
+    console.log(error);
   }
   setIsLoading(false);
 };
 
 function EvaluateTest() {
-  const { setShowNavbar, testState, setTestInProgress } =
+  const { setShowNavbar, testState, removeTestInProgress } =
     useContext(AppContext);
   const [submission, setSubmission] = useState();
   const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+  const [questions, setQuestions] = useState([]);
+  const [automaticGrade, setAutomaticGrade] = useState();
+  const [lateStatus, setLateStatus] = useState();
+  const [currentQuestion, setCurrentQuestion] = useState({
+    questionCode: "",
+    assessment: {
+      stdout: "",
+      status: { id: "", description: "" },
+    },
+    compile_output: "",
+  });
+  const [alert, setAlert] = useState({
+    open: false,
+    severity: "success",
+    message: "",
+  });
 
   useEffect(() => {
     console.log("esti in pagina de evaluare boss");
-    // console.log(testState);
-    getSubmission(testState.id, testState.id_test, setSubmission, setIsLoading);
-  }, [testState]);
+
+    if (testState.id) {
+      console.log("getting submission..");
+      getSubmission(
+        testState.id,
+        testState.id_test,
+        setSubmission,
+        setQuestions,
+        setIsLoading,
+        setAutomaticGrade,
+        setLateStatus
+      );
+      setAutomaticGrade(testState.notaAutomata);
+      setLateStatus(testState.intarziat === 1 ? "da" : "nu");
+    }
+  }, []);
 
   useEffect(() => {
     if (submission) {
       console.log(submission);
+      setCurrentQuestion(submission[0]);
     }
   }, [submission]);
 
   const sliderHandler = (question, index) => {
-    console.log(index);
+    setCurrentQuestion(submission[index]);
   };
 
   setShowNavbar(false);
   return (
-    <Formik
-      validateOnSubmit={true}
-      validationSchema={schema}
-      onSubmit={(values) => {
-        console.log(values);
-      }}
-      initialValues={{
-        finalGrade: "",
-        feedback: "",
-        automaticGrade: "2",
-      }}
-    >
-      {({
-        handleSubmit,
-        handleChange,
-        handleBlur,
-        values,
-        touched,
-        isValid,
-        errors,
-      }) => (
-        <Form noValidate onSubmit={handleSubmit}>
-          <Wrapper>
-            <EditorCard>
-              <QuestionSlider
-                questions={[
-                  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
-                  "altceva",
-                ]}
-                callback={sliderHandler}
-              ></QuestionSlider>
-              <CodeEditor
-                language={"javascript"}
-                value={"console.log('test');"}
-                defaultCode={"console.log('test');"}
-                callback={() => console.log()}
-              ></CodeEditor>
-            </EditorCard>
-            <ConsoleCard>
-              <div>
-                <p>Output:</p>
-                {/* {!isConsoleLoading && stdout && <p>{stdout}</p>}
+    <>
+      <AlertBar
+        open={alert.open}
+        severity={alert.severity}
+        message={alert.message}
+      />
+      <Formik
+        validateOnSubmit={true}
+        validationSchema={schema}
+        onSubmit={(values) => {
+          const { finalGrade, feedback } = values;
+          const data = { finalGrade, feedback };
+          console.log(data);
+          gradeSubmission(
+            data,
+            testState.id_test,
+            testState.id,
+            setIsSubmitLoading,
+            removeTestInProgress,
+            setAlert
+          );
+        }}
+        initialValues={{
+          finalGrade: "",
+          feedback: "",
+          automaticGrade: automaticGrade,
+          late: lateStatus,
+        }}
+      >
+        {({
+          handleSubmit,
+          handleChange,
+          handleBlur,
+          values,
+          touched,
+          isValid,
+          errors,
+        }) => (
+          <Form noValidate onSubmit={handleSubmit}>
+            <Wrapper>
+              <EditorCard>
+                <QuestionSlider
+                  questions={questions}
+                  callback={sliderHandler}
+                ></QuestionSlider>
+                <CodeEditor
+                  language={"javascript"}
+                  value={currentQuestion.questionCode}
+                  callback={() => {}}
+                ></CodeEditor>
+              </EditorCard>
+              <ConsoleCard>
+                <div>
+                  <p>Output:</p>
+                  {/* {!isConsoleLoading && stdout && <p>{stdout}</p>}
                 {isConsoleLoading && <p>Loading...</p>} */}
-              </div>
-              <div>
-                <p>Test Case Status:</p>
-                {/* {!isConsoleLoading && testCaseStatus && <p>{testCaseStatus}</p>}
+                  {currentQuestion.assessment.stdout && (
+                    <p>{currentQuestion.assessment.stdout}</p>
+                  )}
+                </div>
+                <div>
+                  <p>Test Case Status:</p>
+                  {/* {!isConsoleLoading && testCaseStatus && <p>{testCaseStatus}</p>}
                 {isConsoleLoading && <p>Loading...</p>} */}
-              </div>
-            </ConsoleCard>
+                  {currentQuestion.assessment.status.description && (
+                    <p>{currentQuestion.assessment.status.description}</p>
+                  )}
+                </div>
+                {currentQuestion.assessment.compileError && (
+                  <div>
+                    <div>
+                      <p>Compile Error:</p>
+                    </div>
+                    <p>{currentQuestion.assessment.compileError}</p>
+                  </div>
+                )}
+              </ConsoleCard>
 
-            <FeedbackCard>
-              <Banner>
-                <h2>Comentarii și feedback</h2>
-              </Banner>
-              <TextArea
-                rows="20"
-                name="feedback"
-                value={values.feedback}
-                onChange={handleChange}
-              ></TextArea>
-            </FeedbackCard>
-            <GradeCard>
-              <Form.Row className="justify-content-around align-items-center">
-                <Form.Label column lg="auto">
-                  <p>Notă finală</p>
-                </Form.Label>
+              <FeedbackCard>
+                <Banner>
+                  <h2>Comentarii și feedback</h2>
+                </Banner>
+                <TextArea
+                  rows="20"
+                  name="feedback"
+                  value={values.feedback}
+                  onChange={handleChange}
+                ></TextArea>
+              </FeedbackCard>
+              <GradeCard>
+                <Form.Row className="justify-content-around align-items-center">
+                  <Form.Label column lg="auto" className="mr-2">
+                    <div>Notă finală</div>
+                  </Form.Label>
 
-                <Col lg="auto">
-                  <Form.Control
-                    className="text-center"
-                    name="finalGrade"
-                    type="text"
-                    value={values.finalGrade}
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="Introdu nota"
-                    isValid={touched.finalGrade && !errors.finalGrade}
-                    isInvalid={touched.finalGrade && !!errors.finalGrade}
-                  />
-                  <Form.Control.Feedback
-                    type="invalid"
-                    className="position-absolute"
-                  >
-                    <MuiAlert severity="error" elevation={6} variant="filled">
-                      <p>{errors.finalGrade}</p>
-                    </MuiAlert>
-                  </Form.Control.Feedback>
-                </Col>
+                  <Col className="mr-2" lg="auto">
+                    <Form.Control
+                      className="text-center"
+                      name="finalGrade"
+                      type="text"
+                      value={values.finalGrade}
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      placeholder="Introdu nota"
+                      isValid={touched.finalGrade && !errors.finalGrade}
+                      isInvalid={touched.finalGrade && !!errors.finalGrade}
+                    />
+                    <Form.Control.Feedback
+                      type="invalid"
+                      className="position-absolute feedback"
+                    >
+                      <MuiAlert severity="error" elevation={6} variant="filled">
+                        <p>{errors.finalGrade}</p>
+                      </MuiAlert>
+                    </Form.Control.Feedback>
+                  </Col>
 
-                <Form.Label column lg="auto">
-                  <p>Notă automată</p>
-                </Form.Label>
+                  <Form.Label column lg="auto">
+                    <div>Notă automată</div>
+                  </Form.Label>
 
-                <Col lg={3}>
-                  <Form.Control
-                    className="text-center"
-                    name="automaticGrade"
-                    type="text"
-                    value={values.automaticGrade}
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    readOnly
-                  />
-                </Col>
-              </Form.Row>
-            </GradeCard>
-            <SubmitBtn>
-              <p>Trimite</p>
-            </SubmitBtn>
-          </Wrapper>
-        </Form>
-      )}
-    </Formik>
+                  <Col className="mr-2">
+                    <Form.Control
+                      className="text-center"
+                      name="automaticGrade"
+                      type="text"
+                      value={automaticGrade}
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      readOnly
+                    />
+                  </Col>
+                  <Form.Label column lg="auto">
+                    <div>Intarziat</div>
+                  </Form.Label>
+
+                  <Col>
+                    <Form.Control
+                      className="text-center"
+                      name="late"
+                      type="text"
+                      value={lateStatus}
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      readOnly
+                    />
+                  </Col>
+                </Form.Row>
+              </GradeCard>
+              <SubmitBtn>
+                <p>Trimite</p>
+              </SubmitBtn>
+            </Wrapper>
+          </Form>
+        )}
+      </Formik>
+    </>
   );
 }
 
@@ -269,8 +383,14 @@ const GradeCard = styled(Card)`
   justify-content: center;
   margin-right: 1em;
   background-color: ${theme.Grey1};
-  p {
-    margin: 0;
+  // p {
+  //   margin: 0;
+  // }
+  div {
+    font-size: 1rem;
+  }
+  .feedback {
+    width: auto;
   }
 `;
 

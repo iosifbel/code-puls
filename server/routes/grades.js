@@ -7,5 +7,6 @@ router.get(
   "/submission/:id_test/:id_student",
   gradesController.getStudentSubmission
 );
+router.put("/grade/:test_id/:student_id", gradesController.gradeSubmission);
 
 module.exports = router;

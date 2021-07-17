@@ -3,8 +3,15 @@ import styled from "styled-components";
 import theme from "../Assets/theme";
 
 const QuestionSlider = (props) => {
-  const [question, setQuestion] = useState(props.questions[0]);
+  const [question, setQuestion] = useState({ descriere: "" });
   const [index, setIndex] = useState(1);
+
+  useEffect(() => {
+    if (props.questions) {
+      // console.log(props);
+      setQuestion(props.questions[0]);
+    }
+  }, [props.questions]);
 
   function clickHandler(e) {
     const currentQuestion = props.questions[e.target.id];
@@ -30,7 +37,9 @@ const QuestionSlider = (props) => {
             </li>
           ))}
         </ul>
-        <div className="questionBody">{question && <p>{question}</p>}</div>
+        <div className="questionBody">
+          {question && <p>{question.descriere}</p>}
+        </div>
       </Wrapper>
     </>
   );
