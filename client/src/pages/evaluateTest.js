@@ -141,7 +141,7 @@ function EvaluateTest() {
         setLateStatus
       );
       setAutomaticGrade(testState.notaAutomata);
-      setLateStatus(testState.intarziat === 1 ? "da" : "nu");
+      setLateStatus(testState.intarziat === 1 ? "DA" : "NU");
     }
   }, []);
 
@@ -168,7 +168,8 @@ function EvaluateTest() {
         validateOnSubmit={true}
         validationSchema={schema}
         onSubmit={(values) => {
-          const { finalGrade, feedback } = values;
+          let { finalGrade, feedback } = values;
+          feedback = feedback.length === 0 ? null : feedback;
           const data = { finalGrade, feedback };
           console.log(data);
           gradeSubmission(

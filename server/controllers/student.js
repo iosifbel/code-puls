@@ -105,7 +105,7 @@ const controller = {
   getAssignmentsExpired: async (req, res) => {
     connection.query(
       mysql.format(
-        "SELECT t.*, n.nota, n.intarziat FROM teste t INNER JOIN note n ON t.id = n.id_test WHERE n.id_student = ? AND t.deadline < NOW()",
+        "SELECT t.*, n.notaAutomata, n.intarziat, n.nota, n.feedback FROM teste t INNER JOIN note n ON t.id = n.id_test WHERE n.id_student = ? AND t.deadline < NOW()",
         [req.params.student_id]
       ),
 

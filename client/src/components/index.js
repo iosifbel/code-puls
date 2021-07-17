@@ -7,6 +7,7 @@ import QuestionSlider from "./QuestionSlider";
 import TestsTable from "./TestsTable";
 import TestsGrid from "./testsGrid";
 import AlertBar from "./AlertBar";
+import Popup from "./Popup";
 
 export {
   Header,
@@ -18,4 +19,5 @@ export {
   TestsTable,
   TestsGrid,
   AlertBar,
+  Popup,
 };
