@@ -260,7 +260,6 @@ const GraphInputCard = styled(Card)`
   }
 `;
 const GraphCard = styled(Card)`
-  // min-width: 18rem;
   flex-grow: 2;
   margin-right: 1rem;
 `;
