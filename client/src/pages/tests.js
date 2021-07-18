@@ -54,27 +54,6 @@ function Tests() {
       {isLoading ? (
         <Loader></Loader>
       ) : (
-        // <Switch>
-        //   <Route path={`/tests/takeTest`}>
-        //     <TakeTest></TakeTest>
-        //   </Route>
-        //   <Route path={`/tests/evaluateTest`}>
-        //     <EvaluateTest></EvaluateTest>
-        //   </Route>
-
-        //   <Route
-        //     path="/tests"
-        //     exact={true}
-        //     render={(props) => (
-        //       <TestsTable
-        //         title="Teste Programate"
-        //         data={tests}
-        //         callback={handleCallback}
-        //         redirectPath={redirectPath}
-        //       ></TestsTable>
-        //     )}
-        //   />
-        // </Switch>
         <>
           {!redirect && (
             <AlertBar

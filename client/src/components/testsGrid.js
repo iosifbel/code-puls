@@ -18,11 +18,15 @@ import Popup from "./Popup";
 const rootURL = "http://localhost:5000/api";
 
 const TestCard = (props) => {
-  const [currentTarget, setCurrentTarget] = useState();
+  const [currentTarget, setCurrentTarget] = useState(null);
   return (
     <StyledCard graded={props.test.nota}>
       <div className="cardBanner">
-        {props.test.titlu && <div>{props.test.titlu}</div>}
+        {props.test.titlu ? (
+          <div>{props.test.titlu}</div>
+        ) : (
+          <div>Titlu test</div>
+        )}
       </div>
       <div className="cardContentContainer">
         <div className="testPropsContainer">
@@ -34,6 +38,7 @@ const TestCard = (props) => {
             <p>Intarziat</p>
             {props.test.intarziat === 0 && <div>NU</div>}
             {props.test.intarziat === 1 && <div>DA</div>}
+            {props.test.intarziat === null && <div>-</div>}
           </div>
           <div className="testPropContainer">
             <p>Nota automata</p>
@@ -91,47 +96,9 @@ function TestsGrid(props) {
   const [isLoading, setIsLoading] = useState(false);
   const [clickedTest, setClickedTest] = useState();
 
-  // useEffect(() => {
-  //   getStudentTests(user);
-  // }, []);
-
   useEffect(() => {
     console.log(props.tests);
   }, [props.tests]);
-
-  // const getStudentTests = async (user) => {
-  //   console.log("getting tests from db..");
-  //   setIsLoading(true);
-  //   const response = await axios
-  //     .get(`${rootURL}/students/${user.id}/due`)
-  //     .catch((err) => console.log(err));
-
-  //   if (response) {
-  //     setTests(response.data);
-  //   }
-  //   setIsLoading(false);
-  // };
-
-  // useEffect(() => {
-  //   if (clickedTest) {
-  //     setTestInProgress(clickedTest);
-  //     console.log(testInProgress);
-  //   }
-  // }, [clickedTest]);
-
-  // const testClicked = (e) => {
-  //   if (testInProgress.id < 0) {
-  //     console.log("clicked card with id " + e.target.id);
-  //     const clickedTest = tests.find((test) => test.id == e.target.id);
-  //     // props.parentCallBack(clickedTest);
-  //     setClickedTest(clickedTest);
-  //     e.preventDefault();
-  //   } else {
-  //     console.log("test already in progress");
-  //     console.log(testInProgress);
-  //     e.preventDefault();
-  //   }
-  // };
 
   if (isLoading) {
     return <Loader></Loader>;
@@ -151,23 +118,25 @@ function TestsGrid(props) {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%;
-  width: 50%;
+  // height: 100vh;
+  max-height: 60vh;
+  width: 45vw;
   a {
     text-decoration: none;
   }
-  position: fixed;
+  // position: fixed;
   background: ${theme.mainGrey};
   overflow-y: auto;
+  // margin-bottom: 10rem;
 `;
 
 const StyledCard = styled(Card)`
   display: flex;
   width: 40vw;
-  overflow: auto;
+  // overflow: auto;
   // height: 10rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  // margin-top: 1rem;
+  margin-bottom: 2rem;
   padding: 0;
   font-size: 1rem;
 

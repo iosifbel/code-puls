@@ -154,7 +154,7 @@ function AddTest() {
 
     const test = {
       title: title,
-      deadline: date,
+      deadline: date.toString(),
       subjectId: selectedSubject,
       languageId: language,
       questions: questions,
@@ -168,7 +168,7 @@ function AddTest() {
   async function postTest(test) {
     console.log("posting assignment...");
     setIsLoading(true);
-
+    console.log(test);
     const response = await axios({
       method: "post",
       url: `${rootURL}/assignments/create`,

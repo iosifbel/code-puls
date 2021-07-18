@@ -58,7 +58,7 @@ const controller = {
         "INSERT INTO `teste` (`id`, `titlu`, `deadline`, `id_materie`, `id_limbaj_programare`) VALUES (NULL, ?, ?, ?, ?);",
         [
           req.body.title,
-          req.body.deadline,
+          req.body.deadline.toISOString().slice(0, 19).replace("T", " "),
           req.body.subjectId,
           req.body.languageId,
         ]
@@ -136,9 +136,12 @@ const controller = {
     );
   },
   addTest2: async (req, res) => {
-    const { title, deadline, subjectId, languageId, questions, group } =
-      req.body;
-    console.log(deadline);
+    let { title, deadline, subjectId, languageId, questions, group } = req.body;
+    deadline = new Date(deadline);
+    // var tzoffset = new Date().getTimezoneOffset() * 60000; //offset in milliseconds
+    // deadline = new Date(deadline_converted - tzoffset).toISOString();
+    // console.log(deadline.ori);
+    // console.log(deadline.getTimezoneOffset());
     try {
       const insertTestsQuery =
         "INSERT INTO `teste` (`id`, `titlu`, `deadline`, `id_materie`, `id_limbaj_programare`) VALUES (NULL, ?, ?, ?, ?);";

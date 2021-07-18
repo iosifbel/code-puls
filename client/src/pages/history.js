@@ -14,7 +14,7 @@ function History() {
       const { data } = await axios.get(
         `${utils.rootURL}/students/${user_id}/expired`
       );
-      // console.log(data);
+      console.log(data);
       setTests(data);
     } catch (error) {
       console.log(error);
@@ -39,7 +39,7 @@ const Wrapper = styled.div`
   justify-content: center;
   font-size: 3rem;
   margin-left: 20vw;
-  margin-top: 20vh;
+  margin-top: 6rem;
 `;
 
 export default History;
