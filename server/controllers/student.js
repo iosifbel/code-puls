@@ -82,6 +82,24 @@ const controller = {
       }
     );
   },
+  getGrades: async (req, res) => {
+    try {
+      const { student_id, subject_id } = req.params;
+      const query =
+        "SELECT nota, t.titlu, t.deadline FROM `note` n JOIN teste t ON id_test = t.id WHERE n.id_student = ? AND t.id_materie = ?";
+      const [rows] = await connection
+        .promise()
+        .query(query, [student_id, subject_id]);
+      // console.log(rows);
+      // const data = rows.map((item) => item.nota);
+      // console.log(data);
+
+      res.status(200).send(rows);
+    } catch (error) {
+      res.status(500).json({ message: "Eroare la server" });
+      console.log(error);
+    }
+  },
   getAssignmentsDue: async (req, res) => {
     connection.query(
       mysql.format(

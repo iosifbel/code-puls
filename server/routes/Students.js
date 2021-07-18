@@ -6,6 +6,7 @@ const studentController = require("../controllers").student;
 router.get("/:student_id", studentController.getById);
 router.get("/group/:student_group", studentController.getByGroup);
 router.get("/year/:student_year", studentController.getByYear);
+router.get("/:student_id/grades/:subject_id", studentController.getGrades);
 router.get("/:student_id/subjects", studentController.getSubjects);
 router.get("/:student_id/due", studentController.getAssignmentsDue);
 router.get("/:student_id/expired", studentController.getAssignmentsExpired);

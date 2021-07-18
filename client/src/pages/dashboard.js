@@ -1,17 +1,150 @@
 import styled from "styled-components";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/context";
 import { AuthContext } from "../context/AuthContext";
 import { Card } from "../components/defaultComponents";
 import { StudentGraph, TeacherGraph } from "../components";
 import { Form } from "react-bootstrap";
 import theme from "../Assets/theme";
+import axios from "axios";
+import { utils } from "../context";
+import { dataGenerator } from "../components/TeacherGraphGenerator";
 
 function Dashboard(props) {
   const user = useContext(AuthContext).authState.userInfo;
   const { setShowHeader, setShowNavbar } = React.useContext(AppContext);
   setShowHeader(true);
   setShowNavbar(true);
+
+  const [scatterDemoData, setScatterDemoData] = useState([]);
+  const [data, setData] = useState();
+  const [subjectOptions, setSubjectOptions] = useState();
+  const [selectedSubject, setSelectedSubject] = useState({ id: -1, text: "" });
+  const [selectedGroup, setSelectedGroup] = useState();
+  const [groupsOptions, setGroupsOptions] = useState();
+  const [studentGraphData, setStudentGraphData] = useState();
+
+  useEffect(() => {
+    getSubjectOptions();
+    if (user.tip === "profesor") {
+      setScatterDemoData(dataGenerator(100));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user.tip === "profesor") {
+      if (selectedSubject && selectedGroup) {
+        console.log(selectedSubject);
+        console.log(selectedGroup);
+      }
+    } else if (user.tip === "student") {
+      if (selectedSubject) {
+        console.log(selectedSubject);
+      }
+    }
+  }, [selectedSubject, selectedGroup]);
+
+  //   useEffect(()=> {
+  // if(studentGraphData) {
+
+  // }
+  //   }, [studentGraphData(])
+
+  // useEffect(() => {
+  //   if (subjectOptions) {
+  //     console.log(subjectOptions);
+  //   }
+  // }, [subjectOptions]);
+
+  function subjectHandler(id) {
+    try {
+      const subjectId = parseInt(id);
+      if (subjectId !== -1) {
+        const selectedSubject = subjectOptions.find(
+          (item) => item.id === subjectId
+        );
+        setSelectedSubject(selectedSubject);
+        if (user.tip === "profesor") {
+          getGroupsOptions(selectedSubject);
+        } else if (user.tip === "student") {
+          getSubjectTests(selectedSubject.id);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  function groupsHandler(groupId) {
+    if (groupId !== "-1") {
+      setSelectedGroup(groupId);
+    }
+  }
+
+  const getSubjectTests = async (subjectId) => {
+    const tests = [];
+    try {
+      const url = `${utils.rootURL}/students/${user.id}/grades/${subjectId}`;
+      const { data } = await axios.get(url);
+      if (data) {
+        data.forEach((item) => {
+          const date = new Date(item.deadline);
+          item.date = `${date.getDate()}/${parseInt(date.getMonth()) + 1}`;
+          item.grade = item.nota;
+          tests.push(item);
+        });
+      }
+      setStudentGraphData(tests);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getGroupsOptions = async (subjectId) => {
+    try {
+      const url = `${utils.rootURL}/subjects/${subjectId}/groups`;
+
+      const { data } = await axios.get(url);
+      // console.log(data);
+
+      const groupsOptions = [];
+
+      data.forEach((item) => {
+        groupsOptions.push(item.grupa);
+      });
+      setGroupsOptions(groupsOptions);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getSubjectOptions = async () => {
+    try {
+      if (user) {
+        let url = `${utils.rootURL}`;
+
+        if (user.tip === "student") {
+          url += `/students/${user.id}/subjects`;
+        } else if (user.tip === "profesor") {
+          url += `/teachers/${user.id}/subjects`;
+        }
+
+        const { data } = await axios.get(url);
+        // setData(data);
+        // console.log(data);
+
+        const subjectOptions = [];
+
+        data.forEach((item) => {
+          subjectOptions.push({ id: item.id, text: item.descriere });
+        });
+        setSubjectOptions(subjectOptions);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <Wrapper>
       <GreetingsCard>
@@ -20,16 +153,57 @@ function Dashboard(props) {
       </GreetingsCard>
       <div className="graphCardsContainer">
         <GraphCard className="align-items-center justify-content-center">
-          {/* <TeacherGraph></TeacherGraph> */}
-          <StudentGraph></StudentGraph>
+          {user.tip === "student" ? (
+            <StudentGraph
+              subject={selectedSubject.text}
+              data={studentGraphData}
+            ></StudentGraph>
+          ) : (
+            <TeacherGraph data={scatterDemoData}></TeacherGraph>
+          )}
         </GraphCard>
         <GraphInputCard className="align-items-center justify-content-center">
+          <div className="formTitle">Alege setarile graficului</div>
           <Form.Group>
-            <Form.Label>
-              Alege {user.tip === "student" ? "materia" : "grupa"}
-            </Form.Label>
-            <Form.Control as="select" className="Forminput"></Form.Control>
+            {/* <Form.Label>Alege materia</Form.Label> */}
+            <Form.Control
+              as="select"
+              className="Forminput"
+              onChange={(e) => subjectHandler(e.target.value)}
+            >
+              <option key={-1} value={-1}>
+                Selectează materia
+              </option>
+              {subjectOptions &&
+                subjectOptions.length > 0 &&
+                subjectOptions.map((item, index) => (
+                  <option key={index} value={item.id}>
+                    {item.text}
+                  </option>
+                ))}
+            </Form.Control>
           </Form.Group>
+          {user.tip === "profesor" && (
+            <Form.Group>
+              {/* <Form.Label>Alege grupa</Form.Label> */}
+              <Form.Control
+                as="select"
+                className="Forminput"
+                onChange={(e) => groupsHandler(e.target.value)}
+              >
+                <option key={-1} value={-1}>
+                  Selectează grupa
+                </option>
+                {groupsOptions &&
+                  groupsOptions.length > 0 &&
+                  groupsOptions.map((item, index) => (
+                    <option key={index} value={item}>
+                      {item}
+                    </option>
+                  ))}
+              </Form.Control>
+            </Form.Group>
+          )}
         </GraphInputCard>
       </div>
     </Wrapper>
@@ -38,9 +212,14 @@ function Dashboard(props) {
 const GraphInputCard = styled(Card)`
   flex-grow: 1;
   // .Forminput {
-  //   width: 5rem;
+  //   min-width: 5rem;
   // }
   padding: 5rem;
+
+  .formTitle {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
 `;
 const GraphCard = styled(Card)`
   flex-grow: 2;
