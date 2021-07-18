@@ -138,10 +138,7 @@ const controller = {
   addTest2: async (req, res) => {
     let { title, deadline, subjectId, languageId, questions, group } = req.body;
     deadline = new Date(deadline);
-    // var tzoffset = new Date().getTimezoneOffset() * 60000; //offset in milliseconds
-    // deadline = new Date(deadline_converted - tzoffset).toISOString();
-    // console.log(deadline.ori);
-    // console.log(deadline.getTimezoneOffset());
+
     try {
       const insertTestsQuery =
         "INSERT INTO `teste` (`id`, `titlu`, `deadline`, `id_materie`, `id_limbaj_programare`) VALUES (NULL, ?, ?, ?, ?);";
@@ -363,6 +360,7 @@ const controller = {
                 (correctAnswersCount / evaluations.length) *
                 10
               ).toFixed(2);
+              const incercat = 1;
               // console.log("automaticGrade: " + automaticGrade);
               saveToDb(
                 student_id,
@@ -370,7 +368,8 @@ const controller = {
                 questions,
                 evaluations,
                 late,
-                automaticGrade
+                automaticGrade,
+                incercat
               ).then((dbResponse) => {
                 // console.log(dbResponse);
                 // const results = getJudgeResponses.data.submissions;
@@ -401,7 +400,8 @@ async function saveToDb(
   questions,
   evaluations,
   late,
-  automaticGrade
+  automaticGrade,
+  incercat
 ) {
   try {
     evaluations.map(async (item, index) => {
@@ -418,7 +418,8 @@ async function saveToDb(
       code,
       evaluations,
       late,
-      automaticGrade
+      automaticGrade,
+      incercat
     );
   } catch (error) {
     console.log(error.message);
@@ -431,7 +432,8 @@ async function postQuestion(
   questions,
   evaluations,
   late,
-  automaticGrade
+  automaticGrade,
+  incercat
 ) {
   // console.log("Testid: " + testId);
   // console.log("Studentid: " + studentId);
@@ -440,6 +442,7 @@ async function postQuestion(
     evaluareAutomata: JSON.stringify(evaluations),
     intarziat: late,
     notaAutomata: automaticGrade,
+    incercat: incercat,
   };
   // console.log(data);
   return axios({

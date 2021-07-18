@@ -103,7 +103,7 @@ const controller = {
   getAssignmentsDue: async (req, res) => {
     connection.query(
       mysql.format(
-        "SELECT t.*, n.nota, n.intarziat FROM teste t INNER JOIN note n ON t.id = n.id_test WHERE n.id_student = ? AND NOW() < t.deadline",
+        "SELECT t.*, m.descriere as `materie`, n.nota, n.intarziat, n.incercat FROM teste t INNER JOIN note n ON t.id = n.id_test JOIN materii m ON m.id = t.id_materie WHERE n.id_student = ? AND NOW() < t.deadline",
         [req.params.student_id]
       ),
 
@@ -123,7 +123,7 @@ const controller = {
   getAssignmentsExpired: async (req, res) => {
     connection.query(
       mysql.format(
-        "SELECT t.*, n.notaAutomata, n.intarziat, n.nota, n.feedback FROM teste t INNER JOIN note n ON t.id = n.id_test WHERE n.id_student = ? AND t.deadline < NOW()",
+        "SELECT t.*, m.descriere as `materie`, n.notaAutomata, n.intarziat, n.incercat, n.nota, n.feedback FROM teste t INNER JOIN note n ON t.id = n.id_test JOIN materii m ON m.id = t.id_materie WHERE n.id_student = ? AND t.deadline < NOW()",
         [req.params.student_id]
       ),
 
@@ -164,12 +164,13 @@ const controller = {
   uploadAssessedAssignment: async (req, res) => {
     connection.query(
       mysql.format(
-        "UPDATE note SET incercare = ?, evaluareAutomata = ?, notaAutomata = ?, intarziat = ? WHERE id_student = ? AND id_test = ?",
+        "UPDATE note SET incercare = ?, evaluareAutomata = ?, notaAutomata = ?, intarziat = ?, incercat= ? WHERE id_student = ? AND id_test = ?",
         [
           req.body.incercare,
           req.body.evaluareAutomata,
           req.body.notaAutomata,
           req.body.intarziat,
+          req.body.incercat,
           req.params.student_id,
           req.params.test_id,
         ]

@@ -4,13 +4,16 @@ import styled from "styled-components";
 import { TestsGrid } from "../components";
 import { AuthContext } from "../context";
 import { utils } from "../context";
+import { Loader } from "../components";
 
 function History() {
   const user = useContext(AuthContext).authState.userInfo;
-  const [tests, setTests] = useState([["test1", "test2"]]);
+  const [tests, setTests] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   async function getTests(user_id) {
     try {
+      setIsLoading(true);
       const { data } = await axios.get(
         `${utils.rootURL}/students/${user_id}/expired`
       );
@@ -19,11 +22,16 @@ function History() {
     } catch (error) {
       console.log(error);
     }
+    setIsLoading(false);
   }
 
   useEffect(() => {
     getTests(user.id);
   }, []);
+
+  if (isLoading) {
+    return <Loader></Loader>;
+  }
 
   return (
     <Wrapper>

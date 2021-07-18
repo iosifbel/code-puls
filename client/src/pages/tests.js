@@ -104,6 +104,7 @@ const processTests = (tests, languages) => {
     if (item.id_limbaj_programare !== null) {
       item.limbaj = getLanguage(item.id_limbaj_programare, languages);
     }
+    item.incercat = item.incercat === 1 ? "Da" : "Nu";
   });
 };
 

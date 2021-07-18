@@ -32,7 +32,11 @@ const TestCard = (props) => {
         <div className="testPropsContainer">
           <div className="testPropContainer">
             <p>Materie</p>
-            <div>{props.test.id_materie === 3 ? "POO" : "atlceva"}</div>
+            {props.test.materie ? (
+              <div>{props.test.materie}</div>
+            ) : (
+              <div>-</div>
+            )}
           </div>
           <div className="testPropContainer">
             <p>Intarziat</p>

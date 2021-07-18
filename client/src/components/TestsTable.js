@@ -38,7 +38,7 @@ const useStyles = makeStyles({
   },
 });
 
-const studentColumns = ["Titlu", "Materie", "Limbaj", "Deadline"];
+const studentColumns = ["Titlu", "Materie", "Limbaj", "Deadline", "Încercat"];
 const teacherColumns = [
   "Nume",
   "Prenume",
@@ -51,9 +51,10 @@ const teacherColumns = [
 
 const studentDataColumns = [
   "titlu",
-  "id_materie",
+  "materie",
   "limbaj",
   "formatedDeadline",
+  "incercat",
 ];
 
 const teacherDataColumns = [
@@ -61,7 +62,7 @@ const teacherDataColumns = [
   "prenume",
   "grupa",
   "titlu",
-  "id_materie",
+  "materie",
   "limbaj",
   "formatedDeadline",
 ];
@@ -129,7 +130,7 @@ function TestsTable(props) {
                     );
                   } else {
                     return (
-                      <StyledTableCell key={cindex}>
+                      <StyledTableCell key={cindex} align="center">
                         {item[column]}
                       </StyledTableCell>
                     );
