@@ -23,19 +23,19 @@ function Dashboard(props) {
   const [selectedGroup, setSelectedGroup] = useState();
   const [groupsOptions, setGroupsOptions] = useState();
   const [studentGraphData, setStudentGraphData] = useState();
+  const [scatterData, setScatterData] = useState([]);
 
   useEffect(() => {
     getSubjectOptions();
     if (user.tip === "profesor") {
-      setScatterDemoData(dataGenerator(100));
+      setScatterData(dataGenerator(30));
     }
   }, []);
 
   useEffect(() => {
     if (user.tip === "profesor") {
       if (selectedSubject && selectedGroup) {
-        console.log(selectedSubject);
-        console.log(selectedGroup);
+        getScatterplotGrades(selectedSubject.id, selectedGroup);
       }
     } else if (user.tip === "student") {
       if (selectedSubject) {
@@ -64,8 +64,9 @@ function Dashboard(props) {
           (item) => item.id === subjectId
         );
         setSelectedSubject(selectedSubject);
+
         if (user.tip === "profesor") {
-          getGroupsOptions(selectedSubject);
+          getGroupsOptions(selectedSubject.id);
         } else if (user.tip === "student") {
           getSubjectTests(selectedSubject.id);
         }
@@ -80,6 +81,38 @@ function Dashboard(props) {
       setSelectedGroup(groupId);
     }
   }
+
+  const getScatterplotGrades = async (subjectId, group) => {
+    try {
+      const url = `${utils.rootURL}/grades/scatterplot/${subjectId}/${group}`;
+      const { data } = await axios.get(url);
+
+      console.log(data);
+      const freqMap = buildFrequencyMap(data);
+      setScatterData(freqMap);
+      console.log(freqMap);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const buildFrequencyMap = (array) => {
+    const map = {};
+    array.forEach((item) => {
+      if (map[item]) {
+        map[item]++;
+      } else {
+        map[item] = 1;
+      }
+    });
+
+    const data = [];
+    Object.keys(map).forEach((item) => {
+      data.push({ val: parseInt(item), arg: map[item] });
+    });
+    // console.log(obj);
+    return data;
+  };
 
   const getSubjectTests = async (subjectId) => {
     const tests = [];
@@ -105,14 +138,15 @@ function Dashboard(props) {
       const url = `${utils.rootURL}/subjects/${subjectId}/groups`;
 
       const { data } = await axios.get(url);
+      // console.log(url);
+
+      const options = [];
       // console.log(data);
 
-      const groupsOptions = [];
-
       data.forEach((item) => {
-        groupsOptions.push(item.grupa);
+        options.push(item.grupa);
       });
-      setGroupsOptions(groupsOptions);
+      setGroupsOptions(options);
     } catch (error) {
       console.log(error);
     }
@@ -159,7 +193,11 @@ function Dashboard(props) {
               data={studentGraphData}
             ></StudentGraph>
           ) : (
-            <TeacherGraph data={scatterDemoData}></TeacherGraph>
+            <TeacherGraph
+              subject={selectedSubject.text}
+              group={selectedGroup}
+              data={scatterData}
+            ></TeacherGraph>
           )}
         </GraphCard>
         <GraphInputCard className="align-items-center justify-content-center">
@@ -222,6 +260,7 @@ const GraphInputCard = styled(Card)`
   }
 `;
 const GraphCard = styled(Card)`
+  // min-width: 18rem;
   flex-grow: 2;
   margin-right: 1rem;
 `;

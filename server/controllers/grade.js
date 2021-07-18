@@ -58,6 +58,24 @@ const controller = {
       console.log(error);
     }
   },
+  getGradesBySubjectAndGroup: async (req, res) => {
+    try {
+      const { subject_id, group_id } = req.params;
+
+      const query =
+        "SELECT nota FROM `note` JOIN studenti s ON id_student = s.id JOIN teste t ON id_test = t.id WHERE t.id_materie = ? AND s.grupa = ? ";
+      const [rows] = await connection
+        .promise()
+        .query(query, [subject_id, group_id]);
+
+      const data = rows.map((item) => item.nota);
+
+      res.status(200).send(data);
+    } catch (error) {
+      res.status(500).json({ message: "Eroare la server" });
+      console.log(error);
+    }
+  },
 };
 
 module.exports = controller;

@@ -16,10 +16,10 @@ export const dataGenerator = (pointCount) => {
   const data = [];
   for (let i = 0; i < pointCount; i += 1) {
     data.push({
-      arg1: normalDistribution(),
-      val1: normalDistribution(),
-      arg2: normalDistribution() + 3,
-      val2: normalDistribution() + 3,
+      arg: (normalDistribution() + 4) * 10,
+      val: normalDistribution() + 4,
+      // arg2: (normalDistribution() + 7) * 10,
+      // val2: normalDistribution() + 7,
     });
   }
   return data;
