@@ -3,6 +3,7 @@ import React, { useContext } from "react";
 import { AppContext } from "../context/context";
 import { AuthContext } from "../context/AuthContext";
 import { Card } from "../components/defaultComponents";
+import { StudentGraph, TeacherGraph } from "../components";
 import { Form } from "react-bootstrap";
 import theme from "../Assets/theme";
 
@@ -18,7 +19,10 @@ function Dashboard(props) {
         <h2>Cum te simți astăzi?</h2>
       </GreetingsCard>
       <div className="graphCardsContainer">
-        <GraphCard></GraphCard>
+        <GraphCard className="align-items-center justify-content-center">
+          {/* <TeacherGraph></TeacherGraph> */}
+          <StudentGraph></StudentGraph>
+        </GraphCard>
         <GraphInputCard className="align-items-center justify-content-center">
           <Form.Group>
             <Form.Label>
@@ -61,10 +65,10 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   margin-left: 25vw;
-  margin-top: 10vh;
+  margin-top: 20vh;
   margin-right: 10vw;
   margin-bottom: 10vh;
-  height: 63vh;
+  height: 53vh;
   align-items: center;
   justify-content: center;
   font-size: 1rem;

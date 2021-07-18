@@ -8,6 +8,8 @@ import TestsTable from "./TestsTable";
 import TestsGrid from "./testsGrid";
 import AlertBar from "./AlertBar";
 import Popup from "./Popup";
+import StudentGraph from "./StudentGraph";
+import TeacherGraph from "./TeacherGraph";
 
 export {
   Header,
@@ -20,4 +22,6 @@ export {
   TestsGrid,
   AlertBar,
   Popup,
+  StudentGraph,
+  TeacherGraph,
 };
